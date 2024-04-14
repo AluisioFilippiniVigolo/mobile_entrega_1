@@ -5,7 +5,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class BancoHelper {
-  static const arquivoDoBancoDeDados = 'nossoBD.db';
+  static const arquivoDoBancoDeDados = 'database.db';
   static const arquivoDoBancoDeDadosVersao = 1;
 
   static const tabelaTarefa = 'tarefa';
@@ -39,7 +39,14 @@ class BancoHelper {
           $colunaId INTEGER PRIMARY KEY AUTOINCREMENT,
           $colunaCategoria TEXT NOT NULL
         )
+      ''');
 
+    await db.execute('''
+        INSERT INTO $tabelaCategoria($colunaCategoria)
+        VALUES('GERAL')
+      ''');
+
+    await db.execute('''
         CREATE TABLE $tabelaTarefa (
           $colunaId INTEGER PRIMARY KEY AUTOINCREMENT,
           $colunaTitulo TEXT NOT NULL,
@@ -48,7 +55,9 @@ class BancoHelper {
           $colunaIdCategoria INTEGER NOT NULL,
           FOREIGN KEY ($colunaIdCategoria) REFERENCES $tabelaCategoria($colunaId)
         )
+      ''');
 
+    await db.execute('''
         CREATE TABLE $tabelaLogin (
           $colunaId INTEGER PRIMARY KEY AUTOINCREMENT,
           $colunaUsuario TEXT NOT NULL,
@@ -132,5 +141,20 @@ class BancoHelper {
       tarefas.add(tarefa);
     }
     return tarefas;
+  }
+
+  Future<List<Categoria>> buscarCategorias() async {
+    await iniciarBD();
+
+    final List<Map<String, Object?>> categoriasNoBanco =
+        await _bancoDeDados.query(tabelaCategoria);
+
+    return [
+      for (final {
+            colunaId: pId as int,
+            colunaCategoria: pCategoria as String,
+          } in categoriasNoBanco)
+        Categoria(id: pId, categoria: pCategoria),
+    ];
   }
 }

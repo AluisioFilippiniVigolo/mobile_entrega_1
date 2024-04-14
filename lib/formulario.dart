@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/bd/banco_helper.dart';
-import 'package:flutter_application/model/pessoa.dart';
+import 'package:flutter_application/model/tarefa.dart';
 
 class Formulario extends StatefulWidget {
   const Formulario({super.key});
@@ -14,16 +14,15 @@ class _formularioState extends State<Formulario>{
   final TextEditingController _controllerIdade = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  final Pessoa dados = new Pessoa();
+  final Tarefa dados = Tarefa();
   var dbHelper = BancoHelper();
 
-  void Salvar() async {
+  void salvar() async {
     Map<String, dynamic> row = {
-      BancoHelper.colunaNome: dados.nome,
-      BancoHelper.colunaIdade: dados.idade
+      BancoHelper.colunaTitulo: dados.titulo
     };
 
-    dbHelper.inserir(row);
+    dbHelper.inserirTarefa(row);
   }
 
   @override
@@ -55,7 +54,7 @@ class _formularioState extends State<Formulario>{
                   if (value == null || value.isEmpty) {
                     return 'Por favor preencha um valor para o campo nome.';
                   }
-                  dados.nome = value;
+                  dados.titulo = value;
                   return null;
                 },
               ),
@@ -72,7 +71,7 @@ class _formularioState extends State<Formulario>{
                   if (value == null || value.isEmpty) {
                     return 'É obrigatório informar a idade.';
                   }
-                  dados.idade = int.parse(value);
+                  dados.titulo = value;
                   return null;
                 },
               ),
@@ -80,7 +79,7 @@ class _formularioState extends State<Formulario>{
               ElevatedButton(
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    Salvar();
+                    salvar();
                     Navigator.pop(context);
                   }
                 },

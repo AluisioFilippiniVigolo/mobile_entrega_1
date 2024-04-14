@@ -24,21 +24,14 @@ class _TarefasState extends State<Tarefas> {
     final idadePessoa = rnd.nextInt(99);
 
     Map<String, dynamic> row = {
-      BancoHelper.colunaNome: nomePessoa,
-      BancoHelper.colunaIdade: idadePessoa
+      BancoHelper.colunaTitulo: nomePessoa
     };
 
-    final id = await bdHelper.inserir(row);
+    final id = await bdHelper.inserirTarefa(row);
 
     print(
         'Pessoa inserida com ID $id para $nomePessoa com idade de $idadePessoa');
 
-    carregarPessoasSalvas();
-  }
-
-  void removerTudo() async {
-    await bdHelper.deletarTodos();
-    carregarPessoasSalvas();
   }
 
   void editar() async {
@@ -50,15 +43,12 @@ class _TarefasState extends State<Tarefas> {
       _dados[indexEdicao].nome = 'Novo nome em ${DateTime.now()}';
       _dados[indexEdicao].idade = 19;
 
-      await bdHelper.editar(_dados[indexEdicao]);
-      carregarPessoasSalvas();
     }
   }
 
   @override
   void initState() {
     super.initState();
-    carregarPessoasSalvas();
   }
 
   @override
@@ -98,7 +88,7 @@ class _TarefasState extends State<Tarefas> {
                   children: [
                     ElevatedButton(
                         onPressed: () {
-                          removerTudo();
+                          
                         },
                         child: const Text('Deletar Tudo')),
                     ElevatedButton(
@@ -124,7 +114,7 @@ class _TarefasState extends State<Tarefas> {
                     builder: (context) => const Formulario(),
                   ),
                 );
-                carregarPessoasSalvas();
+                
               },
             );
           },
