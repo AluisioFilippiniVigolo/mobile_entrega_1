@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_application/model/categoria.dart';
 import 'package:flutter_application/model/tarefa.dart';
+import 'package:flutter_application/model/usuario.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -22,7 +23,7 @@ class BancoHelper {
 
   static late Database _bancoDeDados;
 
-  iniciarBD() async {
+  Future<void> iniciarBD() async {
     String caminhoBD = await getDatabasesPath();
     String path = join(caminhoBD, arquivoDoBancoDeDados);
 
@@ -38,23 +39,30 @@ class BancoHelper {
         CREATE TABLE $tabelaCategoria (
           $colunaId INTEGER PRIMARY KEY AUTOINCREMENT,
           $colunaCategoria TEXT NOT NULL
-        )
+        );''');
 
-        CREATE TABLE $tabelaTarefa (
+        await db.execute('''CREATE TABLE $tabelaTarefa (
           $colunaId INTEGER PRIMARY KEY AUTOINCREMENT,
           $colunaTitulo TEXT NOT NULL,
           $colunaData NUMERIC NOT NULL,
           $colunaFinalizada NUMERIC NOT NULL DEFAULT 0,
           $colunaIdCategoria INTEGER NOT NULL,
           FOREIGN KEY ($colunaIdCategoria) REFERENCES $tabelaCategoria($colunaId)
-        )
+        );'''
+      );
 
-        CREATE TABLE $tabelaLogin (
+    await db.execute('''CREATE TABLE $tabelaLogin (
           $colunaId INTEGER PRIMARY KEY AUTOINCREMENT,
           $colunaUsuario TEXT NOT NULL,
           $colunaSenha TEXT NOT NULL
-        )
+        );
       ''');
+
+    Map<String, dynamic> row = {
+      colunaUsuario: 'Alisson',
+      colunaSenha: '123456'
+    };
+    await _bancoDeDados.insert(tabelaLogin, row);
   }
 
   Future funcaoAtualizarBD(Database db, int oldVersion, int newVersion) async {
@@ -132,5 +140,15 @@ class BancoHelper {
       tarefas.add(tarefa);
     }
     return tarefas;
+  }
+
+  Future<bool> autenticarUsuario(Usuario usuario) async {
+    await iniciarBD();
+
+    var autenticado = await _bancoDeDados.query(tabelaLogin,
+        where: '$colunaUsuario = ? AND $colunaSenha = ?',
+        whereArgs: [usuario.nome, usuario.senha]);
+
+    return autenticado.isNotEmpty;
   }
 }

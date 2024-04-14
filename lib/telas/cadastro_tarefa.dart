@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter_application/bd/banco_helper.dart';
 import 'package:flutter_application/model/categoria.dart';
 import 'package:flutter_application/model/pessoa.dart';
@@ -117,3 +117,4 @@ class _FormularioState extends State<Formulario> {
     );
   }
 }
+*/

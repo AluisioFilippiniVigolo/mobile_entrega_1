@@ -1,5 +1,5 @@
 
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:flutter_application/Formulario.dart';
 import 'dart:math';
 import 'package:flutter_application/bd/banco_helper.dart';
@@ -24,21 +24,19 @@ class _TarefasState extends State<Tarefas> {
     final idadePessoa = rnd.nextInt(99);
 
     Map<String, dynamic> row = {
-      BancoHelper.colunaNome: nomePessoa,
-      BancoHelper.colunaIdade: idadePessoa
+      
     };
 
-    final id = await bdHelper.inserir(row);
+    final id = await bdHelper.inserir("asdbak",row);
 
     print(
         'Pessoa inserida com ID $id para $nomePessoa com idade de $idadePessoa');
 
-    carregarPessoasSalvas();
+    
   }
 
   void removerTudo() async {
-    await bdHelper.deletarTodos();
-    carregarPessoasSalvas();
+   
   }
 
   void editar() async {
@@ -132,4 +130,4 @@ class _TarefasState extends State<Tarefas> {
       ),
     );
   }
-}
+}*/
