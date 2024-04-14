@@ -1,24 +1,32 @@
+import 'package:flutter_application/model/categoria.dart';
+
 class Tarefa {
   int? id;
-  String? nome;
-  int? idade;
+  String? titulo;
+  DateTime? data;
+  bool? finalizada;
+  Categoria? categoria;
   
-  Pessoa({
+  Tarefa({
      this.id,
-     this.nome,
-     this.idade,
+     this.titulo,
+     this.data,
+     this.finalizada,
+     this.categoria
   });
   
   Map<String, Object?> toMap() {
     return {
       'id': id,
-      'nome': nome,
-      'idade': idade,
+      'titulo': titulo,
+      'data': data,
+      'finalizada': finalizada,
+      'categoria': categoria,
     };
   }
 
   @override
   String toString() {
-    return 'Pessoa { nome: $nome, idade: $idade}';
+    return 'Tarefa { titulo: $titulo, data: $data, finalizada: $finalizada, categoria: $categoria.id}';
   }
 }

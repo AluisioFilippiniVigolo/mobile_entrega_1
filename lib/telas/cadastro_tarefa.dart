@@ -1,42 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/bd/banco_helper.dart';
+import 'package:flutter_application/model/categoria.dart';
 import 'package:flutter_application/model/pessoa.dart';
+import 'package:flutter_application/model/tarefa.dart';
 
 class Formulario extends StatefulWidget {
   const Formulario({super.key});
 
   @override
-  _formularioState createState() => _formularioState();
+  _FormularioState createState() => _FormularioState();
 }
 
-class _formularioState extends State<Formulario>{
-  final TextEditingController _controllerNome = TextEditingController();
-  final TextEditingController _controllerIdade = TextEditingController();
+class _FormularioState extends State<Formulario> {
+  final TextEditingController _controllerTitulo = TextEditingController();
+  final TextEditingController _controllerData = TextEditingController();
+  final TextEditingController _controllerFinalizada = TextEditingController();
+  final TextEditingController _controllerCategoria = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  final Pessoa dados = new Pessoa();
+  final Tarefa dadosTarefa = Tarefa();
+  final Categoria dadosCategoria = Categoria();
   var dbHelper = BancoHelper();
 
-  void Salvar() async {
+  void salvar() async {
     Map<String, dynamic> row = {
-      BancoHelper.colunaNome: dados.nome,
-      BancoHelper.colunaIdade: dados.idade
+      BancoHelper.colunaTitulo: dadosTarefa.titulo,
+      BancoHelper.colunaData: dadosTarefa.data,
+      BancoHelper.colunaFinalizada: dadosTarefa.finalizada,
+      BancoHelper.colunaCategoria: dadosTarefa.categoria
     };
 
-    dbHelper.inserir(row);
+    dbHelper.inserirTarefa(row);
   }
 
   @override
   void dispose() {
-    _controllerNome.dispose();
+    _controllerTitulo.dispose();
+    _controllerData.dispose();
+    _controllerFinalizada.dispose();
+    _controllerCategoria.dispose();
     super.dispose();
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2101));
+
+        if(picked != null) {
+          setState(() {
+            _controllerData.text = '${picked.day}/${picked.month}/${picked.year}';
+          });
+        }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastro de pessoa'),
+        title: const Text('Cadastro de tarefa'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -46,16 +70,14 @@ class _formularioState extends State<Formulario>{
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
-                controller: _controllerNome,
+                controller: _controllerTitulo,
                 decoration: const InputDecoration(
-                    labelText: 'Nome',
-                    border: OutlineInputBorder() //Gera a borda toda no campo.
-                    ),
+                    labelText: 'Titulo', border: OutlineInputBorder()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor preencha um valor para o campo nome.';
+                    return 'É obrigatório informar um título.';
                   }
-                  dados.nome = value;
+                  dadosTarefa.titulo = value;
                   return null;
                 },
               ),
@@ -63,14 +85,16 @@ class _formularioState extends State<Formulario>{
                 height: 20,
               ),
               TextFormField(
-                controller: _controllerIdade,
+                controller: _controllerData,
                 decoration: const InputDecoration(
-                    labelText: 'Idade',
-                    border: OutlineInputBorder() //Gera a borda toda no campo.
+                    labelText: 'Selecione uma Data',
+                    suffixIcon: IconButton(
+                      onPressed: () => _selectDate(context),
+                      icon: Icon(Icons.calendar_today))  
                     ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'É obrigatório informar a idade.';
+                    return 'É obrigatório informar uma data.';
                   }
                   dados.idade = int.parse(value);
                   return null;
@@ -89,8 +113,7 @@ class _formularioState extends State<Formulario>{
             ],
           ),
         ),
-      ),      
+      ),
     );
   }
-
 }

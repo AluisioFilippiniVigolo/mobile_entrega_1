@@ -17,15 +17,6 @@ class _TarefasState extends State<Tarefas> {
   var bdHelper = BancoHelper();
   final List<Pessoa> _dados = [];
 
-  void carregarPessoasSalvas() async {
-    var r = await bdHelper.buscarPessoas();
-
-    setState(() {
-      _dados.clear();
-      _dados.addAll(r);
-    });
-  }
-
   Future<void> inserirRegistro() async {
     var rnd = Random();
 

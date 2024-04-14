@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:ffi';
-import 'package:flutter_application/model/pessoa.dart';
+import 'package:flutter_application/model/categoria.dart';
+import 'package:flutter_application/model/tarefa.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -27,9 +27,9 @@ class BancoHelper {
     String path = join(caminhoBD, arquivoDoBancoDeDados);
 
     _bancoDeDados = await openDatabase(path,
-        version: arquivoDoBancoDeDadosVersao, 
-        onCreate: funcaoCriacaoBD, 
-        onUpgrade: funcaoAtualizarBD, 
+        version: arquivoDoBancoDeDadosVersao,
+        onCreate: funcaoCriacaoBD,
+        onUpgrade: funcaoAtualizarBD,
         onDowngrade: funcaoDowngradeBD);
   }
 
@@ -59,15 +59,14 @@ class BancoHelper {
 
   Future funcaoAtualizarBD(Database db, int oldVersion, int newVersion) async {
     //controle dos comandos sql para novas versões
-    
+
     if (oldVersion < 2) {
-      //Executa comandos  
+      //Executa comandos
     }
-    
   }
 
   Future funcaoDowngradeBD(Database db, int oldVersion, int newVersion) async {
-    //controle dos comandos sql para voltar versãoes. 
+    //controle dos comandos sql para voltar versãoes.
     //Estava-se na 2 e optou-se por regredir para a 1
   }
 
@@ -81,35 +80,57 @@ class BancoHelper {
     return await _bancoDeDados.insert(tabelaTarefa, row);
   }
 
-  Future<int> deletarTarefa(int id) async {
+  Future<void> deletarTarefa(Tarefa tarefa) async {
     await iniciarBD();
-    return _bancoDeDados.delete(tabelaTarefa);
+
+    await _bancoDeDados
+        .delete(tabelaTarefa, where: '$colunaId = ?', whereArgs: [tarefa.id]);
   }
 
-  Future<List<Pessoa>> buscarPessoas() async {
+  Future<void> editarTarefa(Tarefa tarefa) async {
     await iniciarBD();
-    
-    final List<Map<String, Object?>> pessoasNoBanco =
-        await _bancoDeDados.query(tabela);
 
-    return [
-      for (final {
-            colunaId: pId as int,
-            colunaNome: pNome as String,
-            colunaIdade: pIdade as int,
-          } in pessoasNoBanco)
-        Pessoa(id: pId, nome: pNome, idade: pIdade),
-    ];
+    await _bancoDeDados.update(tabelaTarefa, tarefa.toMap(),
+        where: '$colunaId = ?', whereArgs: [tarefa.id]);
   }
 
-  Future<void> editar(Pessoa regPessoa) async {
-    await iniciarBD();
-
-    await _bancoDeDados.update(
-      tabela,
-      regPessoa.toMap(),
+  Future<Categoria> buscarCategoriaPeloId(int categoriaId) async {
+    final List<Map<String, Object?>> resultado = await _bancoDeDados.query(
+      tabelaCategoria,
       where: '$colunaId = ?',
-      whereArgs: [regPessoa.id],
+      whereArgs: [categoriaId],
     );
+
+    final categoriaMap = resultado.first;
+    return Categoria.fromMap(categoriaMap);
+  }
+
+  Future<List<Tarefa>> buscarTarefas() async {
+    await iniciarBD();
+
+    final List<Map<String, Object?>> tarefasNoBanco =
+        await _bancoDeDados.query(tabelaTarefa);
+
+    List<Tarefa> tarefas = [];
+
+    for (final {
+          colunaId: pId as int,
+          colunaTitulo: pTitulo as String,
+          colunaData: pData as DateTime,
+          colunaFinalizada: pFinalizada as bool,
+          colunaCategoria: pCategoria as int,
+        } in tarefasNoBanco) {
+      Categoria categoria = await buscarCategoriaPeloId(pCategoria);
+      Tarefa tarefa = Tarefa(
+        id: pId,
+        titulo: pTitulo,
+        data: pData,
+        finalizada: pFinalizada,
+        categoria: categoria,
+      );
+
+      tarefas.add(tarefa);
+    }
+    return tarefas;
   }
 }
