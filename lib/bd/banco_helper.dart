@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter_application/model/categoria.dart';
 import 'package:flutter_application/model/tarefa.dart';
+import 'package:flutter_application/model/usuario.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -22,7 +23,7 @@ class BancoHelper {
 
   static late Database _bancoDeDados;
 
-  iniciarBD() async {
+  Future<void> iniciarBD() async {
     String caminhoBD = await getDatabasesPath();
     String path = join(caminhoBD, arquivoDoBancoDeDados);
 
@@ -64,6 +65,12 @@ class BancoHelper {
           $colunaSenha TEXT NOT NULL
         )
       ''');
+
+    Map<String, dynamic> row = {
+      colunaUsuario: 'Alisson',
+      colunaSenha: '123456'
+    };
+    await db.insert(tabelaLogin, row);
   }
 
   Future funcaoAtualizarBD(Database db, int oldVersion, int newVersion) async {
@@ -156,5 +163,15 @@ class BancoHelper {
           } in categoriasNoBanco)
         Categoria(id: pId, categoria: pCategoria),
     ];
+  }
+
+  Future<bool> autenticarUsuario(Usuario usuario) async {
+    await iniciarBD();
+
+    var autenticado = await _bancoDeDados.query(tabelaLogin,
+        where: '$colunaUsuario = ? AND $colunaSenha = ?',
+        whereArgs: [usuario.nome, usuario.senha]);
+
+    return autenticado.isNotEmpty;
   }
 }
