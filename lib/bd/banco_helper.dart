@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_application/model/categoria.dart';
 import 'package:flutter_application/model/tarefa.dart';
 import 'package:flutter_application/model/usuario.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -44,7 +45,15 @@ class BancoHelper {
 
     await db.execute('''
         INSERT INTO $tabelaCategoria($colunaCategoria)
-        VALUES('GERAL')
+        VALUES('Trabalho')
+      ''');
+    await db.execute('''
+        INSERT INTO $tabelaCategoria($colunaCategoria)
+        VALUES('Estudos')
+      ''');
+    await db.execute('''
+        INSERT INTO $tabelaCategoria($colunaCategoria)
+        VALUES('Casa')
       ''');
 
     await db.execute('''
@@ -56,6 +65,16 @@ class BancoHelper {
           $colunaIdCategoria INTEGER NOT NULL,
           FOREIGN KEY ($colunaIdCategoria) REFERENCES $tabelaCategoria($colunaId)
         )
+      ''');
+
+    await db.execute('''
+        INSERT INTO $tabelaTarefa($colunaTitulo, $colunaData, $colunaIdCategoria)
+        VALUES('TDE linguagens formais', '$DateTime.now()', 1)
+      ''');
+
+    await db.execute('''
+        INSERT INTO $tabelaTarefa($colunaTitulo, $colunaData, $colunaIdCategoria)
+        VALUES('Estudar Flutter', '$DateTime.now()', 2)
       ''');
 
     await db.execute('''
@@ -121,32 +140,36 @@ class BancoHelper {
     return Categoria.fromMap(categoriaMap);
   }
 
-  Future<List<Tarefa>> buscarTarefas() async {
+  Future<List<Tarefa>> buscarTarefas(bool finalizadas) async {
     await iniciarBD();
 
+    int parametro = finalizadas ? 1 : 0;
+
     final List<Map<String, Object?>> tarefasNoBanco =
-        await _bancoDeDados.query(tabelaTarefa);
+        await _bancoDeDados.query(tabelaTarefa,
+        where: '$colunaFinalizada == $parametro');
 
     List<Tarefa> tarefas = [];
 
-    for (final {
-          colunaId: pId as int,
-          colunaTitulo: pTitulo as String,
-          colunaData: pData as DateTime,
-          colunaFinalizada: pFinalizada as bool,
-          colunaCategoria: pCategoria as int,
-        } in tarefasNoBanco) {
+    for (final tarefaMap in tarefasNoBanco) {
+      int pId = tarefaMap[colunaId] as int;
+      String pTitulo = tarefaMap[colunaTitulo] as String;
+      String pData = tarefaMap[colunaData] as String;
+      int pFinalizada = tarefaMap[colunaFinalizada] as int;
+      int pCategoria = tarefaMap[colunaIdCategoria] as int;
+
       Categoria categoria = await buscarCategoriaPeloId(pCategoria);
       Tarefa tarefa = Tarefa(
         id: pId,
         titulo: pTitulo,
-        data: pData,
-        finalizada: pFinalizada,
+        data: DateTime.parse(pData),
+        finalizada: pFinalizada == 1,
         categoria: categoria,
       );
 
       tarefas.add(tarefa);
     }
+
     return tarefas;
   }
 
@@ -173,5 +196,17 @@ class BancoHelper {
         whereArgs: [usuario.nome, usuario.senha]);
 
     return autenticado.isNotEmpty;
+  }
+
+  Future<void> finalizarTarefa(bool? value, Tarefa tarefa) async {
+    await iniciarBD();
+
+    final finalizado = value == true ? 1 : 0;
+
+    Map<String, int> coluna = { colunaFinalizada: finalizado};
+
+    await _bancoDeDados.update(tabelaTarefa, coluna,
+        where: '$colunaId = ?',
+        whereArgs: [tarefa.id]);
   }
 }

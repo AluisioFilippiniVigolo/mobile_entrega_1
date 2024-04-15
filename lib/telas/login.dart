@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/model/usuario.dart';
 import 'package:flutter_application/servicos/autenticacao_servico.dart';
+import 'package:flutter_application/telas/tarefas.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -22,8 +23,7 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
+    return Scaffold(
         backgroundColor: const Color.fromARGB(255, 148, 147, 147),
         body: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -96,13 +96,18 @@ class _LoginState extends State<Login> {
                       );
 
                       if (autenticado) {
-                        //const Tarefas();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Tarefas(),
+                          ),
+                        );
                       }else{
                         setState(() {
                           mensagemErro = 'usuário/senha incorretos';
                         });
 
-                        Future.delayed(Duration(seconds: 5), () {
+                        Future.delayed(const Duration(seconds: 5), () {
                           setState(() {
                             mensagemErro = '';
                           });
@@ -138,7 +143,6 @@ class _LoginState extends State<Login> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
