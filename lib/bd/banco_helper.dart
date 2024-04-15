@@ -62,7 +62,7 @@ class BancoHelper {
       colunaUsuario: 'Alisson',
       colunaSenha: '123456'
     };
-    await _bancoDeDados.insert(tabelaLogin, row);
+    await db.insert(tabelaLogin, row);
   }
 
   Future funcaoAtualizarBD(Database db, int oldVersion, int newVersion) async {
