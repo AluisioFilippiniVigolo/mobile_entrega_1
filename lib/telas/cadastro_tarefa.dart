@@ -1,19 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_application/bd/banco_helper.dart';
-import 'package:flutter_application/model/categoria.dart';
-import 'package:flutter_application/model/tarefa.dart';
 import 'package:intl/intl.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: CadastroTarefa(), // Use CadastroTarefa as the home widget
-    );
-  }
-}
+import '../bd/banco_helper.dart';
+import '../model/categoria.dart';
+import '../model/tarefa.dart';
+import '../servicos/cadastro_tarefa_servico.dart';
 
 class CadastroTarefa extends StatefulWidget {
   const CadastroTarefa({super.key});
@@ -31,23 +24,32 @@ class _CadastroTarefaState extends State<CadastroTarefa> {
   final Tarefa dadosTarefa = Tarefa();
   final Categoria dadosCategoria = Categoria();
   var dbHelper = BancoHelper();
-  bool _checkboxValue = false;
-  final List<Map<String, dynamic>> _itens = [];
+  bool checkboxValue = false;
+
+  CadastroTarefasServico cadastroTarefasServico = CadastroTarefasServico();
+  List<DropdownMenuItem<int>> categorias = [];
 
   @override
   void initState() {
     super.initState();
-    _loadItens();
+    carregarCategorias();
+  }
+
+  Future<void> carregarCategorias() async {
+    List<DropdownMenuItem<int>> items =
+        await cadastroTarefasServico.listarCategorias();
+    setState(() {
+      categorias = items;
+    });
   }
 
   void salvar() async {
     Map<String, dynamic> row = {
       BancoHelper.colunaTitulo: dadosTarefa.titulo,
-      BancoHelper.colunaData: dadosTarefa.data?.millisecondsSinceEpoch,
+      BancoHelper.colunaData: dadosTarefa.data?.toString(),
       BancoHelper.colunaFinalizada: (dadosTarefa.finalizada ?? false) ? 1 : 0,
-      BancoHelper.colunaCategoria: dadosTarefa.categoria?.id
+      BancoHelper.colunaIdCategoria: dadosTarefa.categoria?.id
     };
-
     dbHelper.inserirTarefa(row);
   }
 
@@ -74,15 +76,11 @@ class _CadastroTarefaState extends State<CadastroTarefa> {
     }
   }
 
-  Future<void> _loadItens() async {
-    List<Categoria> categorias = await dbHelper.buscarCategorias();
-    _itens.clear();
-    for (Categoria categoria in categorias) {
-      Map<String, dynamic> categoriaMap = categoria.toMap();
-      setState(() {
-        _itens.add(categoriaMap);
-      });
-    }
+  void categoriaSelecionada(int? category) async {
+    Categoria categoria = await dbHelper.buscarCategoriaPeloId(category ?? 1);
+    setState(() {
+      dadosTarefa.categoria = categoria;
+    });
   }
 
   @override
@@ -134,30 +132,21 @@ class _CadastroTarefaState extends State<CadastroTarefa> {
               ),
               CheckboxListTile(
                   title: const Text('Finalizada?'),
-                  value: _checkboxValue,
+                  value: checkboxValue,
                   onChanged: (bool? value) {
                     setState(() {
-                      _checkboxValue = value ?? false;
-                      dadosTarefa.finalizada = _checkboxValue;
+                      checkboxValue = value ?? false;
+                      dadosTarefa.finalizada = checkboxValue;
                     });
                   }),
               const SizedBox(
                 height: 20,
               ),
-              DropdownButton<String>(
-                value: dadosCategoria.categoria,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    dadosCategoria.categoria = newValue;
-                  });
-                },
-                items: _itens
-                    .map<DropdownMenuItem<String>>((Map<String, dynamic> item) {
-                  return DropdownMenuItem<String>(
-                    value: item['categoria'],
-                    child: Text(item['categoria']),
-                  );
-                }).toList(),
+              DropdownButton<int>(
+                value: dadosTarefa.categoria?.id,
+                onChanged: categoriaSelecionada,
+                items: categorias,
+                hint: const Text('Selecione uma categoria'),
               ),
               const SizedBox(height: 40),
               ElevatedButton(

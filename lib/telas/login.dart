@@ -20,7 +20,6 @@ class _LoginState extends State<Login> {
   final autenticacaoServico = AutenticacaoServico();
   String mensagemErro = '';
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,7 +84,6 @@ class _LoginState extends State<Login> {
                 const SizedBox(height: 20.0),
                 ElevatedButton(
                   onPressed: () async {
-
                     if (_formKey.currentState!.validate()) {
                       var usuario = Usuario(
                           nome: _usuarioController.text,
@@ -114,11 +112,10 @@ class _LoginState extends State<Login> {
                         });
                       }
                     }
-
                   },
                   style: ElevatedButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 50, vertical: 15),
                     backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                   ),
                   child: const Text(
@@ -135,9 +132,9 @@ class _LoginState extends State<Login> {
                     style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
                   ),
                 ),
-              Text(
-                mensagemErro,
-                style: TextStyle(color: Colors.red),
+                Text(
+                  mensagemErro,
+                  style: TextStyle(color: Colors.red),
                 )
               ],
             ),

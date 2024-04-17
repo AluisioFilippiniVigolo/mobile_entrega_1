@@ -1,28 +1,35 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/servicos/tarefas_servico.dart';
+import 'package:flutter_application/telas/cadastro_categoria.dart';
+import 'package:flutter_application/telas/cadastro_tarefa.dart';
 import '../model/tarefa.dart';
 
 class Tarefas extends StatefulWidget {
-  const Tarefas({Key? key}) : super(key: key);
+  const Tarefas({super.key});
 
   @override
   _TarefasState createState() => _TarefasState();
 }
 
 class _TarefasState extends State<Tarefas> {
+  final TextEditingController _pesquisaController = TextEditingController();
+
   List<Tarefa> tarefas = [];
   List<Tarefa> tarefasFinalizadas = [];
 
   String? filtroCategoria;
   DateTime filtroData = DateTime.now();
   bool filtroFinalizado = false;
+  bool _isSearching = false;
 
   TarefasServico tarefasServico = TarefasServico();
 
   List<DropdownMenuItem<String>> categorias = [];
 
   @override
-  void initState()  {
+  void initState() {
     super.initState();
     carregarCategorias();
     carregarTarefas();
@@ -30,7 +37,8 @@ class _TarefasState extends State<Tarefas> {
   }
 
   Future<void> carregarCategorias() async {
-    List<DropdownMenuItem<String>> items = await tarefasServico.listarCategorias();
+    List<DropdownMenuItem<String>> items =
+        await tarefasServico.listarCategorias();
     setState(() {
       categorias = items;
     });
@@ -48,6 +56,17 @@ class _TarefasState extends State<Tarefas> {
     setState(() {
       tarefasFinalizadas = items;
     });
+  }
+
+  Future<void> filtrarTarefasPelaDescricao() async {
+    List<Tarefa> items = await tarefasServico.buscarTarefasPeloTitulo(_pesquisaController.text);
+    setState(() {
+      tarefasFinalizadas = items;
+    });
+  }
+
+  void onPesquisaChanged(String textoPesquisa) {
+    filtrarTarefasPelaDescricao();
   }
 
   Future<void> dataSelecionada() async {
@@ -78,16 +97,37 @@ class _TarefasState extends State<Tarefas> {
 
   Future<void> finalizarTarefa(bool? value, Tarefa tarefa) async {
     await tarefasServico.finalizarTarefa(value, tarefa);
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista de Tarefas'),
+        title: _isSearching
+            ? TextField(
+                controller: _pesquisaController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Pesquisar...',
+                  border: InputBorder.none,
+                ),
+                onChanged: onPesquisaChanged,
+              )
+            : const Text('Lista de Tarefas'),
+        actions: [
+          IconButton(
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                _isSearching = !_isSearching;
+                if (!_isSearching) {
+                  _pesquisaController.clear();
+                }
+              });
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -132,9 +172,8 @@ class _TarefasState extends State<Tarefas> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: filtroFinalizado
-                  ? tarefasFinalizadas.length
-                  : tarefas.length,
+              itemCount:
+                  filtroFinalizado ? tarefasFinalizadas.length : tarefas.length,
               itemBuilder: (context, index) {
                 final tarefa = filtroFinalizado
                     ? tarefasFinalizadas[index]
@@ -184,16 +223,42 @@ class _TarefasState extends State<Tarefas> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             ElevatedButton(
-              onPressed: () {
-                //VAI PRA TELA DE CADASTRO DE CATEGORIA
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CadastroCategoria(),
+                  ),
+                );
+                carregarCategorias();
               },
-              child: const Text('Cadastro de Categoria'),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add),
+                  SizedBox(width: 8),
+                  Text('Categoria'),
+                ],
+              ),
             ),
             ElevatedButton(
-              onPressed: () {
-                //VAI PRA TELA DE CADASTRO DE TAREFA
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CadastroTarefa(),
+                  ),
+                );
+                carregarTarefas();
               },
-              child: const Text('Cadastro de Tarefa'),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add),
+                  SizedBox(width: 8),
+                  Text('Tarefa'),
+                ],
+              ),
             ),
           ],
         ),
@@ -201,4 +266,3 @@ class _TarefasState extends State<Tarefas> {
     );
   }
 }
-

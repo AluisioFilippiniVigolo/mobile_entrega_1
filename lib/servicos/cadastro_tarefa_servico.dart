@@ -1,15 +1,17 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 import '../bd/banco_helper.dart';
 import '../model/categoria.dart';
 import '../model/tarefa.dart';
 
-class TarefasServico {
+class CadastroTarefasServico {
   final db = BancoHelper();
 
-  Future<List<DropdownMenuItem<String>>>  listarCategorias() async {
+  Future<List<DropdownMenuItem<int>>>  listarCategorias() async {
     List<Categoria> listaCategorias = await db.buscarCategorias();
-    List<DropdownMenuItem<String>> listaDropDown = [];
+    List<DropdownMenuItem<int>> listaDropDown = [];
 
     listaDropDown.add(
         const DropdownMenuItem(
@@ -21,24 +23,12 @@ class TarefasServico {
     for (Categoria categoria in listaCategorias) {
       listaDropDown.add(
         DropdownMenuItem(
-            value: categoria.categoria,
+            value: categoria.id,
             child: Text(categoria.categoria ?? '')
         ),
       );
     }
     return listaDropDown;
-  }
-
-  Future<List<Tarefa>> listarTarefas(bool finalizadas) async {
-    return await db.buscarTarefas(finalizadas);
-  }
-
-  Future<void> finalizarTarefa(bool? value, Tarefa tarefa) async {
-    await db.finalizarTarefa(value, tarefa);
-  }
-
-  Future<List<Tarefa>> buscarTarefasPeloTitulo(String? value) async {
-    return await db.buscarTarefasPeloTitulo(value ?? '');
   }
 
 }
