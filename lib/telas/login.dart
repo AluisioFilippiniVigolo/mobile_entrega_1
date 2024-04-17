@@ -31,8 +31,8 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center( // Centralizando o conteúdo
-        child: SingleChildScrollView( // Permitindo a rolagem
+      body: Center(
+        child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: Form(
@@ -41,7 +41,7 @@ class _LoginState extends State<Login> {
                   ? AutovalidateMode.always
                   : AutovalidateMode.disabled,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center, // Mantendo centralizado
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(
                     Icons.account_circle,
