@@ -13,13 +13,6 @@ class CadastroTarefasServico {
     List<Categoria> listaCategorias = await db.buscarCategorias();
     List<DropdownMenuItem<int>> listaDropDown = [];
 
-    listaDropDown.add(
-        const DropdownMenuItem(
-          value: null,
-          child: Text('Mostrar Todos'),
-        )
-    );
-
     for (Categoria categoria in listaCategorias) {
       listaDropDown.add(
         DropdownMenuItem(

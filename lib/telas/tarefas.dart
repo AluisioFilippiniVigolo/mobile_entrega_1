@@ -36,6 +36,12 @@ class _TarefasState extends State<Tarefas> {
     carregarTarefasFinalizadas();
   }
 
+  @override
+  void dispose() {
+    _pesquisaController.dispose();
+    super.dispose();
+  }
+
   Future<void> carregarCategorias() async {
     List<DropdownMenuItem<String>> items =
         await tarefasServico.listarCategorias();
@@ -60,8 +66,13 @@ class _TarefasState extends State<Tarefas> {
 
   Future<void> filtrarTarefasPelaDescricao() async {
     List<Tarefa> items = await tarefasServico.buscarTarefasPeloTitulo(_pesquisaController.text);
+
+    List<Tarefa> itemsFinalizados = items.where((tarefa) => tarefa.finalizada == true).toList();
+    List<Tarefa> itemsNaoFinalizados = items.where((tarefa) => tarefa.finalizada == false).toList();
+
     setState(() {
-      tarefasFinalizadas = items;
+      tarefas = itemsNaoFinalizados;
+      tarefasFinalizadas = itemsFinalizados;
     });
   }
 

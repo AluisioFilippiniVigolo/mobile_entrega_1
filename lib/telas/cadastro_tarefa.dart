@@ -38,6 +38,7 @@ class _CadastroTarefaState extends State<CadastroTarefa> {
   Future<void> carregarCategorias() async {
     List<DropdownMenuItem<int>> items =
         await cadastroTarefasServico.listarCategorias();
+
     setState(() {
       categorias = items;
     });
