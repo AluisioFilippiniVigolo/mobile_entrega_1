@@ -48,7 +48,7 @@ class _CadastroTarefaState extends State<CadastroTarefa> {
     Map<String, dynamic> row = {
       BancoHelper.colunaTitulo: dadosTarefa.titulo,
       BancoHelper.colunaData: dadosTarefa.data?.toString(),
-      BancoHelper.colunaFinalizada: (dadosTarefa.finalizada ?? false) ? 1 : 0,
+      BancoHelper.colunaFinalizada: 0,
       BancoHelper.colunaIdCategoria: dadosTarefa.categoria?.id
     };
     dbHelper.inserirTarefa(row);
@@ -90,75 +90,82 @@ class _CadastroTarefaState extends State<CadastroTarefa> {
       appBar: AppBar(
         title: const Text('Cadastro de tarefa'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: _controllerTitulo,
+                  decoration: const InputDecoration(
+                      labelText: 'Título', border: OutlineInputBorder()),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'É obrigatório informar um título.';
+                    }
+                    dadosTarefa.titulo = value;
+                    return null;
+                  },
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                  controller: _controllerData,
+                  decoration: InputDecoration(
+                      labelText: 'Selecione uma Data',
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.calendar_today),
+                        onPressed: () => _selectDate(context),
+                      )),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'É obrigatório informar uma data.';
+                    }
+                    dadosTarefa.data = DateTime.parse(value);
+                    return null;
+                  },
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                DropdownButtonFormField<int>(
+                  value: dadosTarefa.categoria?.id,
+                  onChanged: categoriaSelecionada,
+                  items: categorias,
+                  hint: const Text('Selecione uma categoria'),
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Por favor, selecione uma categoria';
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              salvar();
+              Navigator.pop(context);
+            }
+          },
+          child: const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextFormField(
-                controller: _controllerTitulo,
-                decoration: const InputDecoration(
-                    labelText: 'Titulo', border: OutlineInputBorder()),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'É obrigatório informar um título.';
-                  }
-                  dadosTarefa.titulo = value;
-                  return null;
-                },
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              TextFormField(
-                controller: _controllerData,
-                decoration: InputDecoration(
-                    labelText: 'Selecione uma Data',
-                    suffixIcon: IconButton(
-                      icon: const Icon(Icons.calendar_today),
-                      onPressed: () => _selectDate(context),
-                    )),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'É obrigatório informar uma data.';
-                  }
-                  dadosTarefa.data = DateTime.parse(value);
-                  return null;
-                },
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              CheckboxListTile(
-                  title: const Text('Finalizada?'),
-                  value: checkboxValue,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      checkboxValue = value ?? false;
-                      dadosTarefa.finalizada = checkboxValue;
-                    });
-                  }),
-              const SizedBox(
-                height: 20,
-              ),
-              DropdownButton<int>(
-                value: dadosTarefa.categoria?.id,
-                onChanged: categoriaSelecionada,
-                items: categorias,
-                hint: const Text('Selecione uma categoria'),
-              ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    salvar();
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text('Salvar'),
-              )
+              Icon(Icons.save),
+              SizedBox(width: 8),
+              Text('Salvar'),
             ],
           ),
         ),

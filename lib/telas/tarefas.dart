@@ -65,10 +65,13 @@ class _TarefasState extends State<Tarefas> {
   }
 
   Future<void> filtrarTarefasPelaDescricao() async {
-    List<Tarefa> items = await tarefasServico.buscarTarefasPeloTitulo(_pesquisaController.text);
+    List<Tarefa> items =
+        await tarefasServico.buscarTarefasPeloTitulo(_pesquisaController.text);
 
-    List<Tarefa> itemsFinalizados = items.where((tarefa) => tarefa.finalizada == true).toList();
-    List<Tarefa> itemsNaoFinalizados = items.where((tarefa) => tarefa.finalizada == false).toList();
+    List<Tarefa> itemsFinalizados =
+        items.where((tarefa) => tarefa.finalizada == true).toList();
+    List<Tarefa> itemsNaoFinalizados =
+        items.where((tarefa) => tarefa.finalizada == false).toList();
 
     setState(() {
       tarefas = itemsNaoFinalizados;
@@ -154,7 +157,7 @@ class _TarefasState extends State<Tarefas> {
                       value: filtroCategoria,
                       onChanged: categoriaSelecionada,
                       items: categorias,
-                      hint: const Text('Filtrar por categoria'),
+                      hint: const Text('Filtrar'),
                     ),
                   ],
                 ),
@@ -171,7 +174,7 @@ class _TarefasState extends State<Tarefas> {
                 ),
                 Column(
                   children: [
-                    const Text('Finalizado'),
+                    const Text('Finalizada'),
                     Checkbox(
                       value: filtroFinalizado,
                       onChanged: tarefaFinalizada,

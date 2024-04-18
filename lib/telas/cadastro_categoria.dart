@@ -45,7 +45,8 @@ class _CadastroCategoriaState extends State<CadastroCategoria> {
               TextFormField(
                 controller: _controllerCategoria,
                 decoration: const InputDecoration(
-                    labelText: 'Categoria', border: OutlineInputBorder()),
+                    labelText: 'Nome da categoria',
+                    border: OutlineInputBorder()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'É obrigatório informar uma categoria.';
@@ -54,20 +55,27 @@ class _CadastroCategoriaState extends State<CadastroCategoria> {
                   return null;
                 },
               ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    salvar();
-                    Navigator.pop(context);
-                  }
-                },
-                child: const Text('Salvar'),
-              )
             ],
           ),
         ),
       ),
+      bottomNavigationBar: BottomAppBar(
+          child: ElevatedButton(
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            salvar();
+            Navigator.pop(context);
+          }
+        },
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.save),
+            SizedBox(width: 8),
+            Text('Salvar'),
+          ],
+        ),
+      )),
     );
   }
 }
