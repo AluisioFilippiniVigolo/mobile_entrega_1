@@ -1,3 +1,3 @@
 # flutter_application
 
-A new Flutter project.
+Aluísio Filippini Vigolo e Alisson José Menosso.

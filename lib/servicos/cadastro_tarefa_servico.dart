@@ -1,10 +1,7 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 import '../bd/banco_helper.dart';
 import '../model/categoria.dart';
-import '../model/tarefa.dart';
 
 class CadastroTarefasServico {
   final db = BancoHelper();

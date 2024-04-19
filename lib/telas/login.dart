@@ -71,7 +71,9 @@ class _LoginState extends State<Login> {
                     obscureText: true,
                     decoration: const InputDecoration(
                       labelText: 'Senha',
-                      prefixIcon: Icon(Icons.lock,),
+                      prefixIcon: Icon(
+                        Icons.lock,
+                      ),
                       border: OutlineInputBorder(),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
@@ -101,7 +103,7 @@ class _LoginState extends State<Login> {
                         );
 
                         bool autenticado =
-                        await autenticacaoServico.autenticar(usuario);
+                            await autenticacaoServico.autenticar(usuario);
 
                         if (autenticado) {
                           Navigator.push(
@@ -130,16 +132,14 @@ class _LoginState extends State<Login> {
                     child: const Text(
                       'Login',
                       style: TextStyle(
-                          fontSize: 18,
-                          color: Color.fromARGB(255, 0, 0, 0)),
+                          fontSize: 18, color: Color.fromARGB(255, 0, 0, 0)),
                     ),
                   ),
                   const SizedBox(height: 10.0),
-                  if (mensagemErro != null)
-                    Text(
-                      mensagemErro,
-                      style: TextStyle(color: Colors.red),
-                    )
+                  Text(
+                    mensagemErro,
+                    style: TextStyle(color: Colors.red),
+                  )
                 ],
               ),
             ),

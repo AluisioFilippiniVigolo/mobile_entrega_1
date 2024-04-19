@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application/servicos/tarefas_servico.dart';
 import 'package:flutter_application/telas/cadastro_categoria.dart';
