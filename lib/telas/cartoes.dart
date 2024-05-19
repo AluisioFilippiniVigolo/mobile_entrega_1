@@ -3,7 +3,7 @@ import 'package:flutter_application/model/cartao.dart';
 import 'package:flutter_application/model/lista.dart';
 import 'package:flutter_application/servicos/tarefas_servico.dart';
 import 'package:flutter_application/telas/cadastro_cartao.dart';
-import 'package:flutter_application/telas/cadastro_categoria.dart';
+import '../model/Quadro.dart';
 import '../model/tarefa.dart';
 import '../servicos/trello_servico.dart';
 
@@ -34,6 +34,10 @@ class _CartoesState extends State<Cartoes> {
 
   Future<List<Cartao>> buscarCartoes() {
     return _trelloService.buscarCartoes();
+  }
+
+  Future<List<Quadro>> buscarBoards() {
+    return _trelloService.buscarQuadros();
   }
 
   void carregarListas() {
@@ -70,12 +74,12 @@ class _CartoesState extends State<Cartoes> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cartão'),
+        title: const Text('Quadros'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
-        child: FutureBuilder<List<Cartao>>(
-          future: buscarCartoes(),
+        child: FutureBuilder<List<Quadro>>(
+          future: buscarBoards(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -86,16 +90,19 @@ class _CartoesState extends State<Cartoes> {
                 child: Text('Houve um erro: ${snapshot.error}'),
               );
             } else {
-              final listaCartoes = snapshot.data;
+              final listaQuadros = snapshot.data;
 
               return ListView.builder(
-                itemCount: listaCartoes?.length,
+                itemCount: listaQuadros?.length ?? 0,
                 itemBuilder: (context, index) {
-                  final cartao = listaCartoes?[index];
+                  final quadro = listaQuadros?[index];
 
-                  return ListTile(
-                    title: Text(cartao!.nome ?? ''),
-                    subtitle: Text(cartao.descricao ?? ''),
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: ListTile(
+                      title: Text(quadro?.nome ?? ''),
+                      subtitle: Text(quadro?.id ?? ''),
+                    ),
                   );
                 },
               );
@@ -112,25 +119,6 @@ class _CartoesState extends State<Cartoes> {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const CadastroCategoria(),
-                  ),
-                );
-                //carregarCategorias();
-              },
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.add),
-                  SizedBox(width: 8),
-                  Text('Categoria'),
-                ],
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
                     builder: (context) => const CadastroCartao(),
                   ),
                 );
@@ -141,7 +129,7 @@ class _CartoesState extends State<Cartoes> {
                 children: [
                   Icon(Icons.add),
                   SizedBox(width: 8),
-                  Text('Tarefa'),
+                  Text('Quadro'),
                 ],
               ),
             ),

@@ -4,8 +4,9 @@ import 'package:flutter_application/model/lista.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_application/model/cartao.dart';
 
-class TrelloService {
+import '../model/Quadro.dart';
 
+class TrelloService {
 
   Future<List<Cartao>> buscarCartoes() {
     final url = Uri.parse('$_baseUrl/boards/$_idQuadro/cards');
@@ -70,6 +71,25 @@ class TrelloService {
     http.post(Uri.http(url.authority, url.path, params)).then((value) {
       if (value.statusCode == 200) {
         throw Exception('Erro ao cadastrar a lista.');
+      }
+    });
+  }
+
+  Future<List<Quadro>> buscarQuadros() async {
+    final url = Uri.parse('$_baseUrl/members/me');
+    Map<String, dynamic> params = {
+      'boards': 'open',
+      'key': _apiKey,
+      'token': _token,
+    };
+
+    return http.get(Uri.http(url.authority, url.path, params)).then((value) {
+      if (value.statusCode == 200) {
+        final data = jsonDecode(value.body);
+        final quadros = data['boards'] as List;
+        return quadros.map((json) => Quadro.fromJson(json)).toList();
+      } else {
+        throw Exception('Erro ao buscar as listas.');
       }
     });
   }
