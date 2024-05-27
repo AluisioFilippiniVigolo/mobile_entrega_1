@@ -1,30 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/model/cartao.dart';
 import 'package:flutter_application/model/lista.dart';
 import 'package:flutter_application/servicos/trello_servico.dart';
 
-class CadastroCartao extends StatefulWidget {
+class CadastroLista extends StatefulWidget {
   final String idQuadro;
-  final String idLista;
 
-  const CadastroCartao({super.key, required this.idQuadro, this.idLista = ""});
+  const CadastroLista({super.key, required this.idQuadro});
 
   @override
-  _CadastroCartaoState createState() => _CadastroCartaoState();
+  _CadastroListaState createState() => _CadastroListaState();
 }
 
-class _CadastroCartaoState extends State<CadastroCartao> {
+class _CadastroListaState extends State<CadastroLista> {
   final TrelloService _trelloService = TrelloService();
   final TextEditingController _controllerNome = TextEditingController();
-  final TextEditingController _controllerDescricao = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   void salvar() async {
-    Lista lista = Lista(nome: 'nome_lista');
-    lista.id = widget.idLista;
-
-    _trelloService.cadastrarCartao(
-        Cartao(nome: _controllerNome.text, descricao: _controllerDescricao.text, lista: lista));
+    _trelloService.cadastrarLista(Lista(nome: _controllerNome.text), widget.idQuadro);
   }
 
   @override
@@ -46,7 +39,7 @@ class _CadastroCartaoState extends State<CadastroCartao> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cadastro de Cartão'),
+        title: const Text('Cadastro de Lista'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -58,31 +51,17 @@ class _CadastroCartaoState extends State<CadastroCartao> {
               TextFormField(
                 controller: _controllerNome,
                 decoration: const InputDecoration(
-                    labelText: 'Nome da cartão',
+                    labelText: 'Nome da lista',
                     border: OutlineInputBorder()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'É obrigatório informar um nome.';
                   }
-                  //_dadosCartao.nome = value;
                   return null;
                 },
               ),
               const SizedBox(
                 height: 20,
-              ),
-              TextFormField(
-                controller: _controllerDescricao,
-                decoration: const InputDecoration(
-                    labelText: 'Descrição',
-                    border: OutlineInputBorder()),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'É obrigatório informar uma descrição.';
-                  }
-                  //_dadosCartao.descricao = value;
-                  return null;
-                },
               ),
             ],
           ),

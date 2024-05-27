@@ -3,8 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/model/usuario.dart';
 import 'package:flutter_application/servicos/autenticacao_servico.dart';
-import 'package:flutter_application/telas/cartoes.dart';
-import 'package:flutter_application/telas/tarefas.dart';
+import 'package:flutter_application/telas/quadros.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key});
@@ -110,7 +109,7 @@ class _LoginState extends State<Login> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const Cartoes(),
+                              builder: (context) => const Quadros(),
                             ),
                           );
                         } else {

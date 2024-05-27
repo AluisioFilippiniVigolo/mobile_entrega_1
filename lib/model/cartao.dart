@@ -2,15 +2,15 @@ import 'package:flutter_application/model/lista.dart';
 
 class Cartao {
   String? id;
-  String? nome;
-  String? descricao;
-  Lista? lista;
+  final String nome;
+  final String descricao;
+  Lista lista;
   
   Cartao({
      this.id,
-     this.nome,
-     this.descricao,
-     this.lista
+     required this.nome,
+     required this.descricao,
+     required this.lista
   });
   
   Map<String, Object?> toMap() {
@@ -25,15 +25,6 @@ class Cartao {
   @override
   String toString() {
     return 'Tarefa { id: $id, nome: $nome, descricao: $descricao, lista: $lista.id}';
-  }
-
-  factory Cartao.fromJson(Map<String, dynamic> json) {
-    return Cartao(
-      id: json['id'],
-      nome: json['name'],
-      descricao: json['desc'],
-      //lista: json['idList'],
-    );
   }
 
 }

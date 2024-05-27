@@ -1,10 +1,10 @@
 class Lista {
   String? id;
-  String? nome;
+  String nome;
   
   Lista({
      this.id,
-     this.nome
+     required this.nome
   });
   
   Map<String, Object?> toMap() {
