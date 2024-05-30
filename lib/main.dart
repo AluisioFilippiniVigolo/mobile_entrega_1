@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application/telas/login.dart';
+import 'package:flutter_application/telas/autenticacao.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: Login(),
+      home: Autenticacao(),
     );
   }
 }

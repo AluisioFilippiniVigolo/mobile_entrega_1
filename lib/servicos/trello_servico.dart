@@ -8,8 +8,6 @@ import '../model/Quadro.dart';
 
 class TrelloService {
 
-  //static const String _idQuadro = '662eacf7578087c8c029dad6';
-
   Future<List<Cartao>> buscarCartoes(
       String idQuadro, List<Lista> listas) async {
     final url = Uri.parse('$_baseUrl/boards/$idQuadro/cards');
