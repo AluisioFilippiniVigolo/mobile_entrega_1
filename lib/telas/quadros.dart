@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import '../model/cartao.dart';
-import '../model/lista.dart';
-import '../servicos/tarefas_servico.dart';
-import '../telas/cadastro_cartao.dart';
 import '../model/Quadro.dart';
-import '../model/tarefa.dart';
 import '../servicos/trello_servico.dart';
 import '../telas/cartoes.dart';
+import 'cadastro_quadros.dart';
 
 class Quadros extends StatefulWidget {
   const Quadros({super.key});
@@ -16,25 +12,21 @@ class Quadros extends StatefulWidget {
 }
 
 class _QuadrosState extends State<Quadros> {
-  final TextEditingController _pesquisaController = TextEditingController();
+
   final TrelloService _trelloService = TrelloService();
 
-  List<Tarefa> tarefas = [];
-  List<Tarefa> tarefasFinalizadas = [];
-  List<DropdownMenuItem<String>> categorias = [];
-
-  String? filtroCategoria;
-  DateTime filtroData = DateTime.now();
-  bool filtroFinalizado = false;
-
-  TarefasServico tarefasServico = TarefasServico();
-
-  //Future<List<Lista>> buscarListas() {
-  //  return _trelloService.buscarListas('Teste');
-  //}
+  List<Quadro>? listaQuadros = [];
 
   Future<List<Quadro>> buscarBoards() {
     return _trelloService.buscarQuadros();
+  }
+
+  void deletar(String idQuadro) async {
+    await _trelloService.deletarQuadro(idQuadro);
+    setState(() {
+      buscarBoards();
+    });
+
   }
 
   @override
@@ -44,22 +36,7 @@ class _QuadrosState extends State<Quadros> {
 
   @override
   void dispose() {
-    _pesquisaController.dispose();
     super.dispose();
-  }
-
-  Future<void> dataSelecionada() async {
-    final DateTime? calendario = await showDatePicker(
-      context: context,
-      initialDate: filtroData,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (calendario != null && calendario != filtroData) {
-      setState(() {
-        filtroData = calendario;
-      });
-    }
   }
 
   @override
@@ -82,7 +59,7 @@ class _QuadrosState extends State<Quadros> {
                 child: Text('Houve um erro: ${snapshot.error}'),
               );
             } else {
-              final listaQuadros = snapshot.data;
+              listaQuadros = snapshot.data;
 
               return ListView.builder(
                 itemCount: listaQuadros?.length ?? 0,
@@ -92,16 +69,46 @@ class _QuadrosState extends State<Quadros> {
                   return Card(
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
                     child: ListTile(
-                        title: Text(quadro?.nome ?? ''),
-                        subtitle: Text(quadro?.id ?? ''),
-                        onTap: () async {
-                          await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Cartoes(idQuadro: quadro!.id),
+                      title: Text(quadro?.nome ?? ''),
+                      trailing: IconButton(
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.red, // Define a cor do ícone como vermelho
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Excluir Quadro'),
+                              content: Text('Tem certeza que deseja excluir este quadro?'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Cancelar'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    deletar(quadro!.id);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Excluir'),
+                                ),
+                              ],
                             ),
                           );
-                        }),
+                        },
+                      ),
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Cartoes(idQuadro: quadro!.id),
+                          ),
+                        );
+                      },
+                    ),
                   );
                 },
               );
@@ -115,12 +122,16 @@ class _QuadrosState extends State<Quadros> {
           children: [
             ElevatedButton(
               onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CadastroCartao(idQuadro: '', idLista: "123"),
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CadastroQuadro(),
                   ),
-                );
+              ).then((_) async {
+                listaQuadros = await buscarBoards();
+                setState(() {
+                  });
+                });
               },
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,

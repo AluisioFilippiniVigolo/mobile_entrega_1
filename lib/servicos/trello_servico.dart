@@ -8,12 +8,44 @@ import '../model/Quadro.dart';
 
 class TrelloService {
 
+
+  Future<void> cadastrarQuadro(String nomeQuadro) async {
+    final url = Uri.parse('$_baseUrl/boards');
+    Map<String, dynamic> params = {
+      'key': _apiKey,
+      'token': _token,
+      'name': nomeQuadro,
+      'idOrganization': _idOrganization
+    };
+
+    final response = await http.post(Uri.https(url.authority, url.path, params));
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao cadastrar o quadro.');
+    }
+  }
+
+  Future<void> deletarQuadro(String idQuadro) async {
+    final url = Uri.parse('$_baseUrl/boards/$idQuadro');
+    Map<String, dynamic> params = {
+      'key': _apiKey,
+      'token': _token,
+      'idOrganization': _idOrganization
+    };
+
+    final response = await http.delete(Uri.https(url.authority, url.path, params));
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao deletar o quadro.');
+    }
+  }
+
+
   Future<List<Cartao>> buscarCartoes(
       String idQuadro, List<Lista> listas) async {
     final url = Uri.parse('$_baseUrl/boards/$idQuadro/cards');
     Map<String, dynamic> params = {
       'key': _apiKey,
       'token': _token,
+      'idOrganization': _idOrganization
     };
     final response = await http.get(Uri.http(url.authority, url.path, params));
     if (response.statusCode == 200) {
@@ -38,6 +70,7 @@ class TrelloService {
     Map<String, dynamic> params = {
       'key': _apiKey,
       'token': _token,
+      'idOrganization': _idOrganization
     };
     return http.get(Uri.http(url.authority, url.path, params)).then((value) {
       if (value.statusCode == 200) {
@@ -58,7 +91,8 @@ class TrelloService {
       'token': _token,
       'name': cartao.nome,
       'desc': cartao.descricao,
-      'idList': cartao.lista.id
+      'idList': cartao.lista.id,
+      'idOrganization': _idOrganization
     };
     http.post(Uri.https(url.authority, url.path, params)).then((value) {
       if (value.statusCode != 200) {
@@ -73,7 +107,8 @@ class TrelloService {
       'key': _apiKey,
       'token': _token,
       'name': lista.nome,
-      'idBoard': idQuadro
+      'idBoard': idQuadro,
+      'idOrganization': _idOrganization
     };
     http.post(Uri.https(url.authority, url.path, params)).then((value) {
       if (value.statusCode != 200) {
@@ -88,6 +123,7 @@ class TrelloService {
       'boards': 'open',
       'key': _apiKey,
       'token': _token,
+      'idOrganization': _idOrganization
     };
 
     return http.get(Uri.http(url.authority, url.path, params)).then((value) {
@@ -109,6 +145,7 @@ class TrelloService {
       'token': _token,
       'name': cartao.nome,
       'desc': cartao.descricao,
+      'idOrganization': _idOrganization
     };
     http.put(Uri.https(url.authority, url.path, params)).then((value) {
       if (value.statusCode != 200) {
@@ -125,6 +162,7 @@ class TrelloService {
       'token': _token,
       'name': cartao.nome,
       'desc': cartao.descricao,
+      'idOrganization': _idOrganization
     };
     http.delete(Uri.https(url.authority, url.path, params)).then((value) {
       if (value.statusCode != 200) {
