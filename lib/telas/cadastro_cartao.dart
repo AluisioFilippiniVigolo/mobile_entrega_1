@@ -64,7 +64,6 @@ class _CadastroCartaoState extends State<CadastroCartao> {
                   if (value == null || value.isEmpty) {
                     return 'É obrigatório informar um nome.';
                   }
-                  //_dadosCartao.nome = value;
                   return null;
                 },
               ),
@@ -80,7 +79,6 @@ class _CadastroCartaoState extends State<CadastroCartao> {
                   if (value == null || value.isEmpty) {
                     return 'É obrigatório informar uma descrição.';
                   }
-                  //_dadosCartao.descricao = value;
                   return null;
                 },
               ),

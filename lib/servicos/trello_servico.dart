@@ -7,7 +7,8 @@ import 'package:flutter_application/model/cartao.dart';
 import '../model/Quadro.dart';
 
 class TrelloService {
-  //dados da API
+
+  //static const String _idQuadro = '662eacf7578087c8c029dad6';
 
   Future<List<Cartao>> buscarCartoes(
       String idQuadro, List<Lista> listas) async {
@@ -98,6 +99,38 @@ class TrelloService {
         return quadros.map((json) => Quadro.fromJson(json)).toList();
       } else {
         throw Exception('Erro ao buscar as listas.');
+      }
+    });
+  }
+
+  Future<void> atualizarCartao(Cartao cartao) async {
+    final String? idCartao = cartao.id;
+    final url = Uri.parse('$_baseUrl/cards/$idCartao');
+    Map<String, dynamic> params = {
+      'key': _apiKey,
+      'token': _token,
+      'name': cartao.nome,
+      'desc': cartao.descricao,
+    };
+    http.put(Uri.https(url.authority, url.path, params)).then((value) {
+      if (value.statusCode != 200) {
+        throw Exception('Erro ao atualizar o cartão.');
+      }
+    });
+  }
+
+  Future<void> excluirCartao(Cartao cartao) async {
+    final String? idCartao = cartao.id;
+    final url = Uri.parse('$_baseUrl/cards/$idCartao');
+    Map<String, dynamic> params = {
+      'key': _apiKey,
+      'token': _token,
+      'name': cartao.nome,
+      'desc': cartao.descricao,
+    };
+    http.delete(Uri.https(url.authority, url.path, params)).then((value) {
+      if (value.statusCode != 200) {
+        throw Exception('Erro ao excluir o cartão.');
       }
     });
   }

@@ -5,6 +5,7 @@ import '../model/cartao.dart';
 import '../model/lista.dart';
 import '../servicos/tarefas_servico.dart';
 import '../telas/cadastro_cartao.dart';
+import '../telas/detalhe_cartao.dart';
 import '../telas/cadastro_lista.dart';
 import '../model/Quadro.dart';
 import '../model/tarefa.dart';
@@ -154,12 +155,10 @@ class _CartoesState extends State<Cartoes> {
                             await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => CadastroCartao(
-                                  idQuadro: widget.idQuadro,
-                                  idLista: "123",
-                                ),
+                                builder: (context) => DetalheCartao(cartao: cartao),
                               ),
                             );
+                            setState(() {});
                           },
                         ),
                       );
