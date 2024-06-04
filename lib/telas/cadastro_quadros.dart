@@ -16,7 +16,6 @@ class CadastroQuadro extends StatefulWidget {
 class _CadastroQuadroState extends State<CadastroQuadro> {
   final TrelloService _trelloService = TrelloService();
   final TextEditingController _controllerNome = TextEditingController();
-  final TextEditingController _controllerDescricao = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   void salvar() async {

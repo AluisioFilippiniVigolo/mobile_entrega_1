@@ -71,7 +71,7 @@ class _QuadrosState extends State<Quadros> {
                     child: ListTile(
                       title: Text(quadro?.nome ?? ''),
                       trailing: IconButton(
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.delete,
                           color: Colors.red, // Define a cor do ícone como vermelho
                         ),
@@ -79,21 +79,21 @@ class _QuadrosState extends State<Quadros> {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: Text('Excluir Quadro'),
-                              content: Text('Tem certeza que deseja excluir este quadro?'),
+                              title: const Text('Excluir Quadro'),
+                              content: const Text('Tem certeza que deseja excluir este quadro?'),
                               actions: [
                                 TextButton(
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
-                                  child: Text('Cancelar'),
+                                  child: const Text('Cancelar'),
                                 ),
                                 TextButton(
                                   onPressed: () {
                                     deletar(quadro!.id);
                                     Navigator.of(context).pop();
                                   },
-                                  child: Text('Excluir'),
+                                  child: const Text('Excluir'),
                                 ),
                               ],
                             ),

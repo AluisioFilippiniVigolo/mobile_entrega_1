@@ -17,7 +17,7 @@ class _CadastroListaState extends State<CadastroLista> {
   final _formKey = GlobalKey<FormState>();
 
   void salvar() async {
-    _trelloService.cadastrarLista(Lista(nome: _controllerNome.text), widget.idQuadro);
+    _trelloService.cadastrarLista(Lista(nome: _controllerNome.text, arquivado: false), widget.idQuadro);
   }
 
   @override
@@ -53,6 +53,7 @@ class _CadastroListaState extends State<CadastroLista> {
                 decoration: const InputDecoration(
                     labelText: 'Nome da lista',
                     border: OutlineInputBorder()),
+                maxLines: 2,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'É obrigatório informar um nome.';

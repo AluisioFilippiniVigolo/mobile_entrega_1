@@ -20,11 +20,13 @@ class _CadastroCartaoState extends State<CadastroCartao> {
   final _formKey = GlobalKey<FormState>();
 
   void salvar() async {
-    Lista lista = Lista(nome: 'nome_lista');
+    Lista lista = Lista(nome: 'nome_lista', arquivado: false);
     lista.id = widget.idLista;
 
-    _trelloService.cadastrarCartao(
-        Cartao(nome: _controllerNome.text, descricao: _controllerDescricao.text, lista: lista));
+    _trelloService.cadastrarCartao(Cartao(
+        nome: _controllerNome.text,
+        descricao: _controllerDescricao.text,
+        lista: lista));
   }
 
   @override
@@ -48,7 +50,7 @@ class _CadastroCartaoState extends State<CadastroCartao> {
       appBar: AppBar(
         title: const Text('Cadastro de Cartão'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
@@ -58,8 +60,7 @@ class _CadastroCartaoState extends State<CadastroCartao> {
               TextFormField(
                 controller: _controllerNome,
                 decoration: const InputDecoration(
-                    labelText: 'Nome da cartão',
-                    border: OutlineInputBorder()),
+                    labelText: 'Nome da cartão', border: OutlineInputBorder()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'É obrigatório informar um nome.';
@@ -75,6 +76,7 @@ class _CadastroCartaoState extends State<CadastroCartao> {
                 decoration: const InputDecoration(
                     labelText: 'Descrição',
                     border: OutlineInputBorder()),
+                maxLines: 5,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'É obrigatório informar uma descrição.';

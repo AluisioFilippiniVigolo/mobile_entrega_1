@@ -1,11 +1,10 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import '../model/cartao.dart';
 import '../model/lista.dart';
 import '../servicos/tarefas_servico.dart';
 import '../telas/cadastro_cartao.dart';
 import '../telas/detalhe_cartao.dart';
+import '../telas/detalhe_lista.dart';
 import '../telas/cadastro_lista.dart';
 import '../model/Quadro.dart';
 import '../model/tarefa.dart';
@@ -33,6 +32,7 @@ class _CartoesState extends State<Cartoes> {
   bool filtroFinalizado = false;
 
   TarefasServico tarefasServico = TarefasServico();
+  Lista listaAtual = Lista(nome: '', arquivado: false);
 
   Future<List<Lista>> buscarListas() {
     return _trelloService.buscarListas(widget.idQuadro);
@@ -92,88 +92,91 @@ class _CartoesState extends State<Cartoes> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cartões'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10),
-        child: FutureBuilder<Map<Lista, List<Cartao>>>(
-          future: buscarListasComCartoes(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text('Houve um erro: ${snapshot.error}'),
-              );
-            } else {
-              final cartoesAgrupadosPorLista = snapshot.data;
-
-              return ListView.builder(
-                itemCount: cartoesAgrupadosPorLista?.length,
-                itemBuilder: (context, index) {
-                  Lista lista = cartoesAgrupadosPorLista!.keys.elementAt(index);
-                  List<Cartao> cartoesDaLista = cartoesAgrupadosPorLista[lista]!;
-
-                  return ExpansionTile(
-                    title: Row(
-                      children: [
-                        Flexible(
-                          fit: FlexFit.tight,
-                          child: Text(
-                            lista.nome, 
-                            softWrap: true,
-                            maxLines: null,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CadastroCartao(
-                                    idQuadro: widget.idQuadro,
-                                    idLista: lista.id ?? 'id_lista'),
-                              ),
-                            );
-                            setState(() {});
-                          },
-                        ),
-                      ],
-                    ),
-                    children: cartoesDaLista.map((cartao) {
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8.0),
-                        color: const Color.fromRGBO(70, 52, 235, 1),
-                        child: ListTile(
-                          title: Text(cartao.nome, style: const TextStyle(color: Colors.white)),
-                          subtitle: Text(cartao.descricao, style: const TextStyle(color: Colors.white70)),
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetalheCartao(cartao: cartao),
-                              ),
-                            );
-                            setState(() {});
-                          },
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
-              );
-            }
-          },
+        appBar: AppBar(
+          title: const Text('Cartões'),
         ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
+        body: Padding(
+          padding: const EdgeInsets.all(10),
+          child: FutureBuilder<Map<Lista, List<Cartao>>>(
+            future: buscarListasComCartoes(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('Houve um erro: ${snapshot.error}'),
+                );
+              } else {
+                final cartoesAgrupadosPorLista = snapshot.data;
+
+                return ListView.builder(
+                  itemCount: cartoesAgrupadosPorLista?.length,
+                  itemBuilder: (context, index) {
+                    Lista lista =
+                        cartoesAgrupadosPorLista!.keys.elementAt(index);
+                    List<Cartao> cartoesDaLista =
+                        cartoesAgrupadosPorLista[lista]!;
+
+                    return ExpansionTile(
+                      title: Row(
+                        children: [
+                          Flexible(
+                            fit: FlexFit.tight,
+                            child: Text(
+                              lista.nome,
+                              softWrap: true,
+                              maxLines: null,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetalheLista(lista: lista, idQuadro: widget.idQuadro),
+                                ),
+                              );
+                              setState(() {});
+                            },
+                          ),
+                        ],
+                      ),
+                      children: cartoesDaLista.map((cartao) {
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          color: const Color.fromRGBO(70, 52, 235, 1),
+                          child: ListTile(
+                            title: Text(cartao.nome,
+                                style: const TextStyle(color: Colors.white)),
+                            subtitle: Text(cartao.descricao,
+                                style: const TextStyle(color: Colors.white70)),
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetalheCartao(cartao: cartao),
+                                ),
+                              );
+                              setState(() {});
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                );
+              }
+            },
+          ),
+        ),
+        bottomNavigationBar: BottomAppBar(
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             ElevatedButton(
               onPressed: () async {
                 await Navigator.push(
@@ -193,10 +196,8 @@ class _CartoesState extends State<Cartoes> {
                   Text('Lista'),
                 ],
               ),
-            ),
-          ],
-        ),
-      ),
-    );
+            )
+          ]),
+        ));
   }
 }

@@ -24,62 +24,18 @@ class TrelloService {
     }
   }
 
-  Future<void> deletarQuadro(String idQuadro) async {
-    final url = Uri.parse('$_baseUrl/boards/$idQuadro');
+  Future<void> cadastrarLista(Lista lista, String idQuadro) async {
+    final url = Uri.parse('$_baseUrl/lists');
     Map<String, dynamic> params = {
       'key': _apiKey,
       'token': _token,
+      'name': lista.nome,
+      'idBoard': idQuadro,
       'idOrganization': _idOrganization
     };
-
-    final response = await http.delete(Uri.https(url.authority, url.path, params));
-    if (response.statusCode != 200) {
-      throw Exception('Erro ao deletar o quadro.');
-    }
-  }
-
-
-  Future<List<Cartao>> buscarCartoes(
-      String idQuadro, List<Lista> listas) async {
-    final url = Uri.parse('$_baseUrl/boards/$idQuadro/cards');
-    Map<String, dynamic> params = {
-      'key': _apiKey,
-      'token': _token,
-      'idOrganization': _idOrganization
-    };
-    final response = await http.get(Uri.http(url.authority, url.path, params));
-    if (response.statusCode == 200) {
-      final cartoes = jsonDecode(response.body) as List;
-      final mapaListas = {for (var lista in listas) lista.id: lista};
-      return cartoes.map((regCartao) {
-        Lista lista = mapaListas[regCartao['idList']]!;
-        return Cartao(
-          id: regCartao['id'],
-          nome: regCartao['name'],
-          descricao: regCartao['desc'],
-          lista: lista,
-        );
-      }).toList();
-    } else {
-      throw Exception('Erro ao buscar os cartões.');
-    }
-  }
-
-  Future<List<Lista>> buscarListas(String idQuadro) {
-    final url = Uri.parse('$_baseUrl/boards/$idQuadro/lists');
-    Map<String, dynamic> params = {
-      'key': _apiKey,
-      'token': _token,
-      'idOrganization': _idOrganization
-    };
-    return http.get(Uri.http(url.authority, url.path, params)).then((value) {
-      if (value.statusCode == 200) {
-        final todasListas = jsonDecode(value.body) as List;
-        return todasListas.map((regPost) {
-          return Lista.fromJson(regPost);
-        }).toList();
-      } else {
-        throw Exception('Erro ao buscar as listas.');
+    http.post(Uri.https(url.authority, url.path, params)).then((value) {
+      if (value.statusCode != 200) {
+        throw Exception('Erro ao cadastrar a lista.');
       }
     });
   }
@@ -101,18 +57,49 @@ class TrelloService {
     });
   }
 
-  Future<void> cadastrarLista(Lista lista, String idQuadro) async {
-    final url = Uri.parse('$_baseUrl/lists');
+  Future<void> deletarQuadro(String idQuadro) async {
+    final url = Uri.parse('$_baseUrl/boards/$idQuadro');
     Map<String, dynamic> params = {
       'key': _apiKey,
       'token': _token,
-      'name': lista.nome,
-      'idBoard': idQuadro,
       'idOrganization': _idOrganization
     };
-    http.post(Uri.https(url.authority, url.path, params)).then((value) {
+
+    final response = await http.delete(Uri.https(url.authority, url.path, params));
+    if (response.statusCode != 200) {
+      throw Exception('Erro ao deletar o quadro.');
+    }
+  }
+
+  Future<void> arquivarLista(Lista lista) async {
+    final String? idLista = lista.id;
+    final url = Uri.parse('$_baseUrl/lists/$idLista/closed');
+    Map<String, dynamic> params = {
+      'key': _apiKey,
+      'token': _token,
+      'value': 'true',
+      'idOrganization': _idOrganization
+    };
+    http.put(Uri.https(url.authority, url.path, params)).then((value) {
       if (value.statusCode != 200) {
-        throw Exception('Erro ao cadastrar a lista.');
+        throw Exception('Erro ao arquivar a lista.');
+      }
+    });
+  }
+
+  Future<void> excluirCartao(Cartao cartao) async {
+    final String? idCartao = cartao.id;
+    final url = Uri.parse('$_baseUrl/cards/$idCartao');
+    Map<String, dynamic> params = {
+      'key': _apiKey,
+      'token': _token,
+      'name': cartao.nome,
+      'desc': cartao.descricao,
+      'idOrganization': _idOrganization
+    };
+    http.delete(Uri.https(url.authority, url.path, params)).then((value) {
+      if (value.statusCode != 200) {
+        throw Exception('Erro ao excluir o cartão.');
       }
     });
   }
@@ -137,6 +124,50 @@ class TrelloService {
     });
   }
 
+  Future<List<Lista>> buscarListas(String idQuadro) {
+    final url = Uri.parse('$_baseUrl/boards/$idQuadro/lists');
+    Map<String, dynamic> params = {
+      'key': _apiKey,
+      'token': _token,
+      'idOrganization': _idOrganization
+    };
+    return http.get(Uri.http(url.authority, url.path, params)).then((value) {
+      if (value.statusCode == 200) {
+        final todasListas = jsonDecode(value.body) as List;
+        return todasListas.map((regPost) { 
+          return Lista.fromJson(regPost);
+        }).toList();
+      } else {
+        throw Exception('Erro ao buscar as listas.');
+      }
+    });
+  }
+
+  Future<List<Cartao>> buscarCartoes(String idQuadro, List<Lista> listas) async {
+    final url = Uri.parse('$_baseUrl/boards/$idQuadro/cards');
+    Map<String, dynamic> params = {
+      'key': _apiKey,
+      'token': _token,
+      'idOrganization': _idOrganization
+    };
+    final response = await http.get(Uri.http(url.authority, url.path, params));
+    if (response.statusCode == 200) {
+      final cartoes = jsonDecode(response.body) as List;
+      final mapaListas = {for (var lista in listas) lista.id: lista};
+      return cartoes.map((regCartao) {
+        Lista lista = mapaListas[regCartao['idList']]!;
+        return Cartao(
+          id: regCartao['id'],
+          nome: regCartao['name'],
+          descricao: regCartao['desc'],
+          lista: lista,
+        );
+      }).toList();
+    } else {
+      throw Exception('Erro ao buscar os cartões.');
+    }
+  }
+
   Future<void> atualizarCartao(Cartao cartao) async {
     final String? idCartao = cartao.id;
     final url = Uri.parse('$_baseUrl/cards/$idCartao');
@@ -154,20 +185,20 @@ class TrelloService {
     });
   }
 
-  Future<void> excluirCartao(Cartao cartao) async {
-    final String? idCartao = cartao.id;
-    final url = Uri.parse('$_baseUrl/cards/$idCartao');
+  Future<void> atualizarLista(Lista lista) async {
+    final String? idLista = lista.id;
+    final url = Uri.parse('$_baseUrl/lists/$idLista/name');
     Map<String, dynamic> params = {
       'key': _apiKey,
       'token': _token,
-      'name': cartao.nome,
-      'desc': cartao.descricao,
+      'value': lista.nome,
       'idOrganization': _idOrganization
     };
-    http.delete(Uri.https(url.authority, url.path, params)).then((value) {
+    http.put(Uri.https(url.authority, url.path, params)).then((value) {
       if (value.statusCode != 200) {
-        throw Exception('Erro ao excluir o cartão.');
+        throw Exception('Erro ao atualizar a lista.');
       }
     });
   }
+
 }
