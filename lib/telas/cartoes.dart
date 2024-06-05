@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import '../model/cartao.dart';
 import '../model/lista.dart';
-import '../servicos/tarefas_servico.dart';
-import '../telas/cadastro_cartao.dart';
+import '../servicos/lista_servico.dart';
 import '../telas/detalhe_cartao.dart';
 import '../telas/detalhe_lista.dart';
 import '../telas/cadastro_lista.dart';
-import '../model/Quadro.dart';
-import '../model/tarefa.dart';
-import '../servicos/trello_servico.dart';
+import '../servicos/cartao_servico.dart';
 
 class Cartoes extends StatefulWidget {
   final String idQuadro;
@@ -20,26 +17,15 @@ class Cartoes extends StatefulWidget {
 }
 
 class _CartoesState extends State<Cartoes> {
-  final TextEditingController _pesquisaController = TextEditingController();
-  final TrelloService _trelloService = TrelloService();
-
-  List<Tarefa> tarefas = [];
-  List<Tarefa> tarefasFinalizadas = [];
-  List<DropdownMenuItem<String>> categorias = [];
-
-  String? filtroCategoria;
-  DateTime filtroData = DateTime.now();
-  bool filtroFinalizado = false;
-
-  TarefasServico tarefasServico = TarefasServico();
-  Lista listaAtual = Lista(nome: '', arquivado: false);
+  final CartaoService _cartaoService = CartaoService();
+  final ListaServico _listaServico = ListaServico();
 
   Future<List<Lista>> buscarListas() {
-    return _trelloService.buscarListas(widget.idQuadro);
+    return _listaServico.buscarListas(widget.idQuadro);
   }
 
   Future<List<Cartao>> buscarCartao(List<Lista> listas) {
-    return _trelloService.buscarCartoes(widget.idQuadro, listas);
+    return _cartaoService.buscarCartoes(widget.idQuadro, listas);
   }
 
   Future<Map<Lista, List<Cartao>>> buscarListasComCartoes() async {
@@ -60,10 +46,6 @@ class _CartoesState extends State<Cartoes> {
     return cartoesAgrupadosPorLista;
   }
 
-  Future<List<Quadro>> buscarBoards() {
-    return _trelloService.buscarQuadros();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -71,22 +53,7 @@ class _CartoesState extends State<Cartoes> {
 
   @override
   void dispose() {
-    _pesquisaController.dispose();
     super.dispose();
-  }
-
-  Future<void> dataSelecionada() async {
-    final DateTime? calendario = await showDatePicker(
-      context: context,
-      initialDate: filtroData,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (calendario != null && calendario != filtroData) {
-      setState(() {
-        filtroData = calendario;
-      });
-    }
   }
 
   @override

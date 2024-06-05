@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/model/lista.dart';
-import 'package:flutter_application/servicos/trello_servico.dart';
+import '../servicos/lista_servico.dart';
 
 class CadastroLista extends StatefulWidget {
   final String idQuadro;
@@ -12,12 +12,12 @@ class CadastroLista extends StatefulWidget {
 }
 
 class _CadastroListaState extends State<CadastroLista> {
-  final TrelloService _trelloService = TrelloService();
   final TextEditingController _controllerNome = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final ListaServico _listaServico = ListaServico();
 
   void salvar() async {
-    _trelloService.cadastrarLista(Lista(nome: _controllerNome.text, arquivado: false), widget.idQuadro);
+    _listaServico.cadastrarLista(Lista(nome: _controllerNome.text, arquivado: false), widget.idQuadro);
   }
 
   @override
@@ -32,7 +32,7 @@ class _CadastroListaState extends State<CadastroLista> {
   }
 
   Future<List<Lista>> buscarListas() {
-    return _trelloService.buscarListas(widget.idQuadro);
+    return _listaServico.buscarListas(widget.idQuadro);
   }
 
   @override

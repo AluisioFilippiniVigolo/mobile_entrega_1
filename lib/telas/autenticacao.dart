@@ -4,6 +4,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_application/telas/quadros.dart';
 import 'package:local_auth/local_auth.dart';
 
+enum _SupportState {
+  unknown,
+  supported,
+  unsupported,
+}
+
 class Autenticacao extends StatefulWidget {
   const Autenticacao({Key? key}) : super(key: key);
 
@@ -134,8 +140,4 @@ class _AutenticacaoState extends State<Autenticacao> {
   }
 }
 
-enum _SupportState {
-  unknown,
-  supported,
-  unsupported,
-}
+

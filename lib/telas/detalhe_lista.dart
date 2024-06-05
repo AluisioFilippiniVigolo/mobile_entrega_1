@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/lista.dart';
-import '../servicos/trello_servico.dart';
+import '../servicos/lista_servico.dart';
 import '../telas/cadastro_cartao.dart';
 
 class DetalheLista extends StatefulWidget {
@@ -14,19 +14,19 @@ class DetalheLista extends StatefulWidget {
 }
 
 class _DetalheListaState extends State<DetalheLista> {
-  final TrelloService _trelloService = TrelloService();
   final TextEditingController _controllerNome = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final ListaServico _listaServico = ListaServico();
 
   void salvar() async {
-    _trelloService.atualizarLista(Lista(
+    _listaServico.atualizarLista(Lista(
         id: widget.lista.id,
         nome: _controllerNome.text,
         arquivado: widget.lista.arquivado));
   }
 
   void arquivarLista() async {
-    _trelloService.arquivarLista(Lista(
+    _listaServico.arquivarLista(Lista(
         id: widget.lista.id,
         nome: _controllerNome.text,
         arquivado: widget.lista.arquivado));

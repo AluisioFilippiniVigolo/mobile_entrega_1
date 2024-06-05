@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application/servicos/quadro_servico.dart';
 import '../model/Quadro.dart';
-import '../servicos/trello_servico.dart';
 import '../telas/cartoes.dart';
 import 'cadastro_quadros.dart';
 
@@ -12,31 +12,29 @@ class Quadros extends StatefulWidget {
 }
 
 class _QuadrosState extends State<Quadros> {
-
-  final TrelloService _trelloService = TrelloService();
-
+  final QuadroServico _quadroServico = QuadroServico();
   List<Quadro>? listaQuadros = [];
 
   Future<List<Quadro>> buscarBoards() {
-    return _trelloService.buscarQuadros();
+    return _quadroServico.buscarQuadros();
   }
 
   void deletar(String idQuadro) async {
-    await _trelloService.deletarQuadro(idQuadro);
+    await _quadroServico.deletarQuadro(idQuadro);
+    final quadrosAtualizados = await buscarBoards();
     setState(() {
-      buscarBoards();
+      listaQuadros = quadrosAtualizados;
     });
-
   }
 
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    buscarBoards().then((quadros) {
+      setState(() {
+        listaQuadros = quadros;
+      });
+    });
   }
 
   @override
@@ -73,7 +71,7 @@ class _QuadrosState extends State<Quadros> {
                       trailing: IconButton(
                         icon: const Icon(
                           Icons.delete,
-                          color: Colors.red, // Define a cor do ícone como vermelho
+                          color: Colors.red,
                         ),
                         onPressed: () {
                           showDialog(
@@ -122,14 +120,15 @@ class _QuadrosState extends State<Quadros> {
           children: [
             ElevatedButton(
               onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const CadastroQuadro(),
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CadastroQuadro(),
                   ),
-              ).then((_) async {
-                listaQuadros = await buscarBoards();
-                setState(() {
+                ).then((_) async {
+                  final quadrosAtualizados = await buscarBoards();
+                  setState(() {
+                    listaQuadros = quadrosAtualizados;
                   });
                 });
               },

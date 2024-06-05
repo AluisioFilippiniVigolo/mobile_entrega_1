@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application/model/cartao.dart';
-import 'package:flutter_application/model/lista.dart';
-import 'package:flutter_application/servicos/trello_servico.dart';
-
-import '../model/Quadro.dart';
+import 'package:flutter_application/servicos/quadro_servico.dart';
 
 class CadastroQuadro extends StatefulWidget {
 
@@ -14,12 +10,12 @@ class CadastroQuadro extends StatefulWidget {
 }
 
 class _CadastroQuadroState extends State<CadastroQuadro> {
-  final TrelloService _trelloService = TrelloService();
   final TextEditingController _controllerNome = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final QuadroServico _quadroServico = QuadroServico();
 
   void salvar() async {
-    _trelloService.cadastrarQuadro(_controllerNome.text);
+    _quadroServico.cadastrarQuadro(_controllerNome.text);
   }
 
   @override

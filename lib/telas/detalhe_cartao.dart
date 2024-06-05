@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/cartao.dart';
-import '../servicos/trello_servico.dart';
+import '../servicos/cartao_servico.dart';
 
 class DetalheCartao extends StatefulWidget {
   final Cartao cartao;
@@ -12,13 +12,13 @@ class DetalheCartao extends StatefulWidget {
 }
 
 class _DetalheCartaoState extends State<DetalheCartao> {
-  final TrelloService _trelloService = TrelloService();
+  final CartaoService _cartaoService = CartaoService();
   final TextEditingController _controllerNome = TextEditingController();
   final TextEditingController _controllerDescricao = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   void salvar() async {
-    _trelloService.atualizarCartao(Cartao(
+    _cartaoService.atualizarCartao(Cartao(
         id: widget.cartao.id,
         nome: _controllerNome.text,
         descricao: _controllerDescricao.text,
@@ -26,7 +26,7 @@ class _DetalheCartaoState extends State<DetalheCartao> {
   }
 
   void excluir() async {
-    _trelloService.excluirCartao(Cartao(
+    _cartaoService.excluirCartao(Cartao(
         id: widget.cartao.id,
         nome: _controllerNome.text,
         descricao: _controllerDescricao.text,
