@@ -1,9 +1,6 @@
 
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
-<<<<<<< Updated upstream
-import 'package:flutter_application/telas/login.dart';
-=======
 import 'package:flutter_application/firebase_options.dart';
 import 'package:flutter_application/servicos/notificacoes.dart';
 import 'package:flutter_application/telas/autenticacao.dart';
@@ -22,7 +19,6 @@ void main() async {
   );
 
   await GerenciadorPush().iniciar();
->>>>>>> Stashed changes
 
   runApp(const MyApp());
 }
@@ -38,17 +34,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< Updated upstream
-    return const MaterialApp(
-      home: Login(),
-=======
     return MaterialApp(
       home: const Autenticacao(),
       navigatorKey: chaveDeNavegacao,
       routes: {
         '/quadros': (context) => const Quadros(),
       }
->>>>>>> Stashed changes
     );
   }
 }
