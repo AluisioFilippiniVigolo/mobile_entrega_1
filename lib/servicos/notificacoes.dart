@@ -1,7 +1,4 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_application/model/cartao.dart';
-import 'package:flutter_application/servicos/cartao_servico.dart';
-import 'package:flutter_application/telas/detalhe_cartao.dart';
 import 'package:logger/logger.dart';
 import 'package:flutter_application/main.dart';
 
@@ -35,7 +32,7 @@ class GerenciadorPush {
   }
 
   Future<void> configurarIteracaoComNotificacao() async { 
-    //await _firebaseMsg.getInitialMessage().then(processarNotificacao);   
+    //await _firebaseMsg.getInitialMessage().then(processarNotificacao);
 
     FirebaseMessaging.onMessage.listen(processarNotificacao);
 
@@ -43,10 +40,7 @@ class GerenciadorPush {
   }
 
   void processarNotificacao(RemoteMessage? msg) async {
-    CartaoService cartaoService = CartaoService();
     if (msg?.data['idCartao'] != '') {
-      Cartao cartao = await cartaoService.buscarCartao(msg?.data['idCartao']);
-      DetalheCartao(cartao: cartao);
       chaveDeNavegacao.currentState?.pushNamed('/quadros', arguments: msg);  
     } 
   }
