@@ -2,10 +2,14 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application/firebase_options.dart';
+import 'package:flutter_application/servicos/background_servico.dart';
+import 'package:flutter_application/servicos/notificacao_cartao_expiracao.dart';
 import 'package:flutter_application/servicos/notificacoes.dart';
 import 'package:flutter_application/telas/autenticacao.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application/telas/cartoes.dart';
+
+import 'package:workmanager/workmanager.dart';
 
 final chaveDeNavegacao = GlobalKey<NavigatorState>();
 
@@ -19,6 +23,17 @@ void main() async {
   );
 
   await GerenciadorPush().iniciar();
+
+  NotificationService().init();
+
+  BackgroundService().VamosVerSeVai();
+
+  /*Workmanager().initialize(
+    backgroundCallback,
+    isInDebugMode: true,
+  );
+  BackgroundService().registerPeriodicTask();*/
+
 
   runApp(const MyApp());
 }
@@ -43,6 +58,14 @@ class _MyAppState extends State<MyApp> {
           return MaterialPageRoute(
             builder: (context) => Cartoes(idQuadro: id),
           );
+        }
+        if (settings.name == '/cardDetails') {
+          final RemoteMessage? message = settings.arguments as RemoteMessage?;
+
+          //mandar o cartão aqui seu animal.
+          /*return MaterialPageRoute(
+            builder: (context) => DetalheCartao(),
+          );*/
         }
       },
     );
