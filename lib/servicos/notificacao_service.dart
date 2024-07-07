@@ -1,4 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:logger/logger.dart';
+import '../main.dart';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -21,14 +23,31 @@ class NotificationService {
       android: initializationSettingsAndroid,
     );
 
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse: funcaoRespostaDaNotificacao);
   }
 
-  Future<void> showNotification(String title, String body) async {
+  void funcaoRespostaDaNotificacao(
+      NotificationResponse notificationResponse) async {
+    final String? payload = notificationResponse.payload;
+    if (notificationResponse.payload != null) {
+      Logger().i('notification payload: $payload');
+    } else {
+      Logger().i('funcaoRespostaDaNotificacao');
+    }
+    if (notificationResponse.id == 1){
+      chaveDeNavegacao.currentState?.pushNamed('/cartaoVencimento', arguments: payload);
+    }
+    else {
+      chaveDeNavegacao.currentState?.pushNamed('/aviso', arguments: payload);
+    }
+  }
+
+  Future<void> showNotificationVencimento(String title, String body, String payload) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
-      'your channel id',
-      'your channel name',
+      '123',
+      'Canal Alerta Vencimento',
       importance: Importance.max,
       priority: Priority.high,
     );
@@ -37,10 +56,11 @@ class NotificationService {
     NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
-      0,
+      1,
       title,
       body,
       platformChannelSpecifics,
+      payload: payload,
     );
   }
 }

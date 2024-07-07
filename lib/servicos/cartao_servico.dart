@@ -61,7 +61,9 @@ class CartaoService {
           nome: regCartao['name'],
           descricao: regCartao['desc'],
           lista: lista,
-          ultimaModificacao: DateTime.parse(regCartao['dateLastActivity']).toLocal()
+          ultimaModificacao: DateTime.parse(regCartao['dateLastActivity']).toLocal(),
+          dataVencimento: regCartao['due'] != null ? DateTime.tryParse(regCartao['due'])?.toLocal() : null,
+          completo: regCartao['dueComplete']
         );
       }).toList();
     } else {
@@ -104,7 +106,8 @@ class CartaoService {
           nome: regCartao['name'],
           descricao: regCartao['desc'],
           lista: lista,
-          ultimaModificacao: DateTime.parse(regCartao['dateLastActivity']).toLocal()
+          ultimaModificacao: DateTime.parse(regCartao['dateLastActivity']).toLocal(),
+          completo: regCartao['dueComplete']
         );
       });
     } else {

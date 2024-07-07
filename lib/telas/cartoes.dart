@@ -9,10 +9,6 @@ import '../telas/detalhe_lista.dart';
 import '../telas/cadastro_lista.dart';
 import '../servicos/cartao_servico.dart';
 
-@pragma('vm:entry-point')
-void verificarSeExisteAtualizacao() {
-  Logger().i('${DateTime.now()}} | Executou a atualização');
-}
 
 class Cartoes extends StatefulWidget {
   final String idQuadro;
@@ -56,8 +52,6 @@ class _CartoesState extends State<Cartoes> {
   @override
   void initState() {
     super.initState();
-    AndroidAlarmManager.periodic(
-        const Duration(seconds: 5), 0, verificarSeExisteAtualizacao);
   }
 
   @override

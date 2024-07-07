@@ -29,4 +29,19 @@ class Lista {
       arquivado: json['closed']
     );
   }
+
+  factory Lista.fromJson2(Map<String, dynamic> json) {
+    return Lista(
+        id: json['id'],
+        nome: json['nome'],
+        arquivado: json['closed'] ?? false
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nome': nome,
+    };
+  }
 }
