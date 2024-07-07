@@ -11,10 +11,12 @@ dependencies:
   firebase_messaging: ^15.0.1
   flutter:
     sdk: flutter
+  flutter_local_notifications: ^17.2.1+1
   http: ^1.2.1
   intl: ^0.19.0
   local_auth: ^2.2.0
   logger: ^2.3.0
+  shared_preferences: ^2.2.3
   sqflite: ^2.3.3
   workmanager: ^0.5.2
 

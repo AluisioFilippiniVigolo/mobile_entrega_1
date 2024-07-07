@@ -67,6 +67,15 @@ class _MyAppState extends State<MyApp> {
             builder: (context) => DetalheCartao(cartao: cartao),
           );
         }
+
+        if (settings.name == '/cartaoCriacao') {
+          Map<String, dynamic> jsonMap = jsonDecode(settings.arguments as String);
+          Cartao cartao = Cartao.fromJson(jsonMap);
+
+          return MaterialPageRoute(
+            builder: (context) => DetalheCartao(cartao: cartao),
+          );
+        }
       },
     );
   }

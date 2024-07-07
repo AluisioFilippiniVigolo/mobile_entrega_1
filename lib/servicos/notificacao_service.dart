@@ -34,11 +34,14 @@ class NotificationService {
       Logger().i('notification payload: $payload');
     } else {
       Logger().i('funcaoRespostaDaNotificacao');
-    }
+    } 
+
     if (notificationResponse.id == 1){
       chaveDeNavegacao.currentState?.pushNamed('/cartaoVencimento', arguments: payload);
     }
-    else {
+    else if (notificationResponse.id == 2){
+      chaveDeNavegacao.currentState?.pushNamed('/cartaoCriacao', arguments: payload);
+    } else {
       chaveDeNavegacao.currentState?.pushNamed('/aviso', arguments: payload);
     }
   }
@@ -57,6 +60,27 @@ class NotificationService {
 
     await flutterLocalNotificationsPlugin.show(
       1,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: payload,
+    );
+  }
+
+  Future<void> showNotificationCartaoAdicionado(String title, String body, String payload) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+    AndroidNotificationDetails(
+      '321',
+      'Canal Novo Cartão Adicionado',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails platformChannelSpecifics =
+    NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      2,
       title,
       body,
       platformChannelSpecifics,
