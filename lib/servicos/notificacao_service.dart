@@ -36,30 +36,30 @@ class NotificationService {
       Logger().i('funcaoRespostaDaNotificacao');
     } 
 
-    if (notificationResponse.id == 1){
+    if ((notificationResponse.id! >= 1000) && (notificationResponse.id! < 2000)) {
       chaveDeNavegacao.currentState?.pushNamed('/cartaoVencimento', arguments: payload);
     }
-    else if (notificationResponse.id == 2){
+    else if (notificationResponse.id! >= 2000) {
       chaveDeNavegacao.currentState?.pushNamed('/cartaoCriacao', arguments: payload);
     } else {
       chaveDeNavegacao.currentState?.pushNamed('/aviso', arguments: payload);
     }
   }
 
-  Future<void> showNotificationVencimento(String title, String body, String payload) async {
+  Future<void> showNotificationVencimento(int id, String title, String body, String payload) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
       '123',
       'Canal Alerta Vencimento',
       importance: Importance.max,
-      priority: Priority.high,
+      priority: Priority.high
     );
 
     const NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
-      1,
+      id,
       title,
       body,
       platformChannelSpecifics,
@@ -67,20 +67,20 @@ class NotificationService {
     );
   }
 
-  Future<void> showNotificationCartaoAdicionado(String title, String body, String payload) async {
+  Future<void> showNotificationCartaoAdicionado(int id, String title, String body, String payload) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
-      '321',
+      '456',
       'Canal Novo Cartão Adicionado',
       importance: Importance.max,
-      priority: Priority.high,
+      priority: Priority.high
     );
 
     const NotificationDetails platformChannelSpecifics =
     NotificationDetails(android: androidPlatformChannelSpecifics);
 
     await flutterLocalNotificationsPlugin.show(
-      2,
+      id,
       title,
       body,
       platformChannelSpecifics,

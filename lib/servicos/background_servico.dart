@@ -20,6 +20,8 @@ void funcaoDeExecucaoDoAlarme() async {
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool primeiraExecucao = prefs.getBool('primeiraExecucao') ?? true;
+  int idNotificationChannel123 = 1000;
+  int idNotificationChannel456 = 2000;
 
   List<String> idsCartoesProcessados = prefs.getStringList('idsCartoesProcessados') ?? [];
 
@@ -50,31 +52,34 @@ void funcaoDeExecucaoDoAlarme() async {
       Logger().i('${DateTime.now()} | Tempo para vencimento do cartão em dias ${tempo?.inDays}');
       if (tempo?.inDays == 0) {
         await NotificationService().showNotificationVencimento(
-            'Tarefa próxima do prazo!',
-            'A tarefa "${cartao.nome}" está próxima do prazo.',
-            cartao.toJson());
+          idNotificationChannel123,
+          'Tarefa próxima do prazo!',
+          'A tarefa "${cartao.nome}" está próxima do prazo.',
+          cartao.toJson());
+          idNotificationChannel123++;
       }
-
-      if (primeiraExecucao) {
-        Logger().i('Primeira execução, salvando os IDs dos cartões sem enviar notificações.');
-        idsCartoesProcessados.addAll(idsNovosCartoes);
-        prefs.setBool('primeiraExecucao', false);
-      } else {
-        Logger().i('Execução subsequente, enviando notificações para novos cartões.');
-        for (String idCartao in idsNovosCartoes) {
-          final cartao = listaCartao.firstWhere((cartao) => cartao.id == idCartao);
-          await NotificationService().showNotificationCartaoAdicionado(
-            'Novo cartão adicionado!',
-            'O cartão "${cartao.nome}" foi adicionado.',
-            cartao.toJson(),
-          );
-        }
-      }
-
-      idsCartoesProcessados.addAll(idsNovosCartoes);
-      prefs.setStringList('idsCartoesProcessados', idsCartoesProcessados);
     }
   }
+
+  if (primeiraExecucao) {
+    Logger().i('${DateTime.now()} | Primeira execução, salvando os IDs dos cartões sem enviar notificações.');
+    idsCartoesProcessados.addAll(idsNovosCartoes);
+    prefs.setBool('primeiraExecucao', false);
+  } else {
+    Logger().i('${DateTime.now()} | Execução subsequente, enviando notificações para novos cartões.');
+    for (String idCartao in idsNovosCartoes) {
+      final cartao = listaCartao.firstWhere((cartao) => cartao.id == idCartao);
+      await NotificationService().showNotificationCartaoAdicionado(
+        idNotificationChannel456,
+        'Novo cartão adicionado!',
+        'O cartão "${cartao.nome}" foi adicionado.',
+        cartao.toJson(),
+      );
+      idNotificationChannel456++;
+    }
+  }
+  idsCartoesProcessados.addAll(idsNovosCartoes);
+  prefs.setStringList('idsCartoesProcessados', idsCartoesProcessados);
 }
 
 class BackgroundService {
