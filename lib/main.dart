@@ -30,7 +30,9 @@ void main() async {
 
   NotificationService().init();
 
-  BackgroundService().VamosVerSeVai();
+  BackgroundService().alarmeVencimento();
+
+  BackgroundService().alarmeNovoCartao();
 
   runApp(const MyApp());
 }
@@ -53,7 +55,7 @@ class _MyAppState extends State<MyApp> {
 
         if (settings.name == '/quadros') {
           final RemoteMessage? message = settings.arguments as RemoteMessage?;
-          final id = message!.data['idcartao'];
+          final id = message!.data['idQuadro'];
           return MaterialPageRoute(
             builder: (context) => Cartoes(idQuadro: id),
           );

@@ -10,7 +10,7 @@ import '../model/Quadro.dart';
 import 'notificacao_service.dart';
 
 @pragma('vm:entry-point')
-void funcaoDeExecucaoDoAlarme() async {
+void funcaoAlarmeVencimento() async {
   Logger().i('${DateTime.now()}} | Buscando os quadros');
 
   final QuadroServico quadroServico = QuadroServico();
@@ -18,27 +18,15 @@ void funcaoDeExecucaoDoAlarme() async {
   final ListaServico listaServico = ListaServico();
   final quadros = await quadroServico.buscarQuadros();
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool primeiraExecucao = prefs.getBool('primeiraExecucao') ?? true;
   int idNotificationChannel123 = 1000;
-  int idNotificationChannel456 = 2000;
-
-  List<String> idsCartoesProcessados = prefs.getStringList('idsCartoesProcessados') ?? [];
 
   final List<Cartao> listaCartao = [];
-  final List<String> idsNovosCartoes = [];
 
   for (Quadro quadro in quadros) {
     Logger().i('${DateTime.now()}} | Buscando cartoes para o quadro ${quadro.nome}');
     final listas = await listaServico.buscarListas(quadro.id);
     final cartoes = await cartaoServico.buscarCartoes(quadro.id, listas);
-
-    for (Cartao cartao in cartoes) {
-      if (!idsCartoesProcessados.contains(cartao.id)) {
-        idsNovosCartoes.add(cartao.id!);
-      }
-      listaCartao.add(cartao);
-    }
+    listaCartao.addAll(cartoes);
   }
 
   Logger().i('${DateTime.now()} | Buscando se há cartão com data de vencimento');
@@ -58,6 +46,38 @@ void funcaoDeExecucaoDoAlarme() async {
           cartao.toJson());
           idNotificationChannel123++;
       }
+    }
+  }
+}
+
+@pragma('vm:entry-point')
+void funcaoAlarmeNovoCartao() async {
+  Logger().i('${DateTime.now()}} | Buscando os quadros');
+
+  final QuadroServico quadroServico = QuadroServico();
+  final CartaoService cartaoServico = CartaoService();
+  final ListaServico listaServico = ListaServico();
+  final quadros = await quadroServico.buscarQuadros();
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool primeiraExecucao = prefs.getBool('primeiraExecucao') ?? true;
+  int idNotificationChannel456 = 2000;
+
+  List<String> idsCartoesProcessados = prefs.getStringList('idsCartoesProcessados') ?? [];
+
+  final List<Cartao> listaCartao = [];
+  final List<String> idsNovosCartoes = [];
+
+  for (Quadro quadro in quadros) {
+    Logger().i('${DateTime.now()}} | Buscando cartoes para o quadro ${quadro.nome}');
+    final listas = await listaServico.buscarListas(quadro.id);
+    final cartoes = await cartaoServico.buscarCartoes(quadro.id, listas);
+
+    for (Cartao cartao in cartoes) {
+      if (!idsCartoesProcessados.contains(cartao.id)) {
+        idsNovosCartoes.add(cartao.id!);
+      }
+      listaCartao.add(cartao);
     }
   }
 
@@ -83,8 +103,13 @@ void funcaoDeExecucaoDoAlarme() async {
 }
 
 class BackgroundService {
-  void VamosVerSeVai() async {
+  void alarmeVencimento() async {
     await AndroidAlarmManager.periodic(
-        const Duration(minutes: 1), 0, funcaoDeExecucaoDoAlarme);
+        const Duration(minutes: 2), 0, funcaoAlarmeVencimento);
+  }
+
+  void alarmeNovoCartao() async {
+    await AndroidAlarmManager.periodic(
+        const Duration(minutes: 1), 1, funcaoAlarmeNovoCartao);
   }
 }
